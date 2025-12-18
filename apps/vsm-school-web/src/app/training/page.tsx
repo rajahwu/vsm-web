@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import styles from './blackjack.module.css'; // We keep the CSS file for now
+import styles from './blackjack.module.css';
+import { useAtoms } from '@/hooks/useAtoms';
 
 // --- TYPES ---
 type VSMCard = { front: string; back: string; };
@@ -14,7 +15,7 @@ type BlockItem = {
 };
 type WindowType = 'sprint' | 'standard' | 'grind';
 
-// --- DATA (The Curriculum) ---
+// --- DATA ---
 const blocks: Record<WindowType, { duration: number; items: BlockItem[] }> = {
   sprint: {
     duration: 10,
@@ -81,7 +82,8 @@ export default function VSMTrainer() {
   const [view, setView] = useState<View>('timeWindow');
   const [currentWindow, setCurrentWindow] = useState<WindowType | null>(null);
   const [currentBlock, setCurrentBlock] = useState<BlockItem | null>(null);
-  
+  const { atoms, refresh } = useAtoms('vsm_session');
+
   // Session State
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [cardFlipped, setCardFlipped] = useState(false);
@@ -104,7 +106,6 @@ export default function VSMTrainer() {
     return () => clearInterval(interval);
   }, [isActive, timeRemaining]);
 
-  // --- NAVIGATION ---
   const selectTimeWindow = (window: WindowType) => {
     setCurrentWindow(window);
     setTimeRemaining(blocks[window].duration * 60);
@@ -132,13 +133,12 @@ export default function VSMTrainer() {
   };
 
   const completeSession = () => { setIsActive(false); setView('completion'); };
-  
+
   const restart = () => {
     setCurrentWindow(null); setCurrentBlock(null); setCurrentCardIndex(0);
     setCardFlipped(false); setIsActive(false); setView('timeWindow');
   };
 
-  // --- DATABASE WRITE (The Memory) ---
   const shipToShell = async () => {
     if (!currentBlock || !currentWindow) return;
     setIsShipping(true);
@@ -153,7 +153,6 @@ export default function VSMTrainer() {
     };
 
     try {
-      // 1. Write to Supabase
       const { error } = await supabase.from('atoms').insert({
         type: 'vsm_session',
         val: logEntry
@@ -161,7 +160,7 @@ export default function VSMTrainer() {
 
       if (error) throw error;
 
-      // 2. Feedback
+      await refresh(); // Refresh list AFTER successful insert
       alert('✓ Atom Locked in Core Memory');
       restart();
     } catch (err) {
@@ -180,18 +179,16 @@ export default function VSMTrainer() {
 
   return (
     <div className={styles.dojoContainer}>
-      {/* HEADER */}
-      <div style={{position: 'absolute', top: 20, left: 20, color: 'var(--color-teal-500)', fontWeight: 'bold'}}>
+      <div style={{ marginBottom: '2rem', color: 'var(--color-teal-500)', fontWeight: 'bold' }}>
         VSM TRAINING // {view.toUpperCase()}
       </div>
 
-      {/* VIEW 1: TIME WINDOW */}
       {view === 'timeWindow' && (
         <div className={styles.selectionView}>
           <h1>Choose Your Intensity</h1>
           <div className={styles.windowGrid}>
             {(Object.keys(blocks) as WindowType[]).map((key) => (
-              <div key={key} 
+              <div key={key}
                 className={`${styles.windowCard} ${currentWindow === key ? styles.selected : ''}`}
                 onClick={() => selectTimeWindow(key)}
               >
@@ -203,7 +200,6 @@ export default function VSMTrainer() {
         </div>
       )}
 
-      {/* VIEW 2: BLOCK SELECT */}
       {view === 'block' && currentWindow && (
         <div className={styles.blockView}>
           <h2>Select Drill Protocol</h2>
@@ -224,7 +220,6 @@ export default function VSMTrainer() {
         </div>
       )}
 
-      {/* VIEW 3: ACTIVE DRILL */}
       {view === 'page' && currentBlock && (
         <div className={styles.pageView}>
           <div className={styles.pageHeader}>
@@ -257,7 +252,6 @@ export default function VSMTrainer() {
         </div>
       )}
 
-      {/* VIEW 4: COMPLETION */}
       {view === 'completion' && (
         <div className={styles.completionView}>
           <div className={styles.completionCheck}>✓</div>
@@ -270,6 +264,27 @@ export default function VSMTrainer() {
           </div>
         </div>
       )}
+
+      {/* SESSION HISTORY (Added to the bottom of the container) */}
+      <div className="mt-12 pt-12 border-t border-zinc-800 w-full max-w-4xl">
+        <h3 className="text-xl font-bold text-zinc-500 mb-6">Session History (Atoms)</h3>
+        <div className="space-y-4">
+          {atoms.map((atom) => (
+            <div key={atom.id} className="p-4 bg-zinc-900/50 border border-zinc-800 rounded flex justify-between items-center">
+              <div>
+                <div className="text-teal-400 font-mono text-sm">{atom.val.block_title}</div>
+                <div className="text-zinc-500 text-xs mt-1">
+                  {new Date(atom.created_at).toLocaleDateString()} • {atom.val.cards_completed} Cards • {atom.val.duration_seconds}s
+                </div>
+              </div>
+              <div className="text-zinc-600 font-mono text-xs tracking-widest uppercase">
+                {atom.val.window_type}
+              </div>
+            </div>
+          ))}
+          {atoms.length === 0 && <div className="text-zinc-600 italic">No atoms in core memory.</div>}
+        </div>
+      </div>
     </div>
   );
 }
