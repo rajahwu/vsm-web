@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* VSM Schools Brand Colors */
+    --deep-indigo: 220 45% 20%; /* #1C2C4B */
+    --warm-gold: 42 32% 50%; /* #A78A55 */
+    --stone-grey: 0 0% 29%; /* #4A4A4A */
+    --soft-background: 0 0% 96%; /* #F5F5F5 */
+    
+    /* Design System Colors */
+    --background: 0 0% 96%; /* Soft Background */
+    --foreground: 220 45% 20%; /* Deep Indigo */
+    --card: 0 0% 100%;
+    --card-foreground: 220 45% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 45% 20%;
+    --primary: 220 45% 20%; /* Deep Indigo */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 42 32% 50%; /* Warm Gold */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 29%; /* Stone Grey */
+    --accent: 42 32% 50%; /* Warm Gold */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 100%;
+    --ring: 42 32% 50%; /* Warm Gold */
+    --radius: 0.75rem; /* Soft rounded corners */
+    
+    /* Custom Gradients */
+    --gradient-misty: linear-gradient(135deg, hsl(var(--deep-indigo) / 0.05), hsl(var(--stone-grey) / 0.03));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--deep-indigo) / 0.95), hsl(var(--deep-indigo) / 0.85));
+    --gradient-gold: linear-gradient(135deg, hsl(var(--warm-gold)), hsl(var(--warm-gold) / 0.8));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--deep-indigo) / 0.1);
+    --shadow-card: 0 8px 30px hsl(var(--deep-indigo) / 0.08);
+    --shadow-glow: 0 0 40px hsl(var(--warm-gold) / 0.2);
+    
+    /* Typography */
+    --font-heading: 'Noto Sans Display', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Custom Typography Classes */
+.font-heading {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Custom Background Patterns */
+.bg-misty {
+  background: var(--gradient-misty);
+}
+
+.bg-hero {
+  background: var(--gradient-hero);
+}
+
+.bg-gold {
+  background: var(--gradient-gold);
+}
+
+/* Smooth Transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Utility Classes */
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}

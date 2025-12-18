@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSM Training Dojo</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-success: var(--color-teal-500);
+            --color-bg: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: rgba(98, 108, 113, 1);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--color-text);
+        }
+
+        body {
+            background-color: var(--color-bg);
+            padding: var(--space-16);
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: var(--space-16);
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: var(--color-text-secondary);
+        }
+
+        p {
+            margin-bottom: var(--space-16);
+            line-height: 1.6;
+        }
+
+        button {
+            font-family: inherit;
+            font-size: 14px;
+            padding: var(--space-8) var(--space-16);
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            font-weight: 500;
+        }
+
+        button.primary {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        button.primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        button.secondary {
+            background: rgba(33, 128, 141, 0.1);
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+        }
+
+        button.secondary:hover {
+            background: rgba(33, 128, 141, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Layout */
+        .dojo-container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+
+        .view-wrapper {
+            display: none;
+        }
+
+        .view-wrapper.active {
+            display: block;
+        }
+
+        /* STATE: Selection View (Time Window Selection) */
+        .selection-view {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-32);
+            text-align: center;
+        }
+
+        .selection-view h1 {
+            margin-bottom: var(--space-32);
+            color: var(--color-charcoal-800);
+        }
+
+        .window-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-16);
+            margin-bottom: var(--space-32);
+        }
+
+        .window-card {
+            background: var(--color-white);
+            border: 2px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--space-24);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            text-align: left;
+        }
+
+        .window-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(33, 128, 141, 0.15);
+        }
+
+        .window-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.05);
+        }
+
+        .window-card h3 {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+
+        .window-card .duration {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--space-8);
+        }
+
+        .window-card .description {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            line-height: 1.4;
+        }
+
+        /* STATE: Block View */
+        .block-view {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-32);
+        }
+
+        .block-header {
+            margin-bottom: var(--space-32);
+        }
+
+        .block-header h2 {
+            margin-bottom: var(--space-8);
+        }
+
+        .block-meta {
+            display: flex;
+            gap: var(--space-16);
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-20);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .meta-badge {
+            background: rgba(33, 128, 141, 0.1);
+            color: var(--color-primary);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+        }
+
+        .block-description {
+            background: var(--color-white);
+            border-left: 3px solid var(--color-primary);
+            padding: var(--space-16);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-24);
+            line-height: 1.6;
+        }
+
+        .skill-section {
+            margin-bottom: var(--space-24);
+        }
+
+        .skill-section h3 {
+            margin-bottom: var(--space-12);
+        }
+
+        .skill-content {
+            background: var(--color-white);
+            padding: var(--space-16);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-16);
+        }
+
+        .card-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--space-12);
+            margin-top: var(--space-16);
+        }
+
+        .card-button {
+            padding: var(--space-12);
+            text-align: center;
+            border: 2px solid var(--color-gray-200);
+            background: var(--color-white);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: all var(--duration-normal);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .card-button:hover {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.05);
+        }
+
+        .card-button.active {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border-color: var(--color-primary);
+        }
+
+        /* STATE: Page View (Drill Page) */
+        .page-view {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--color-surface);
+            z-index: 100;
+            padding: 0;
+        }
+
+        .page-header {
+            background: var(--color-charcoal-800);
+            color: var(--color-white);
+            padding: var(--space-16);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .timer {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-teal-300);
+            text-align: center;
+        }
+
+        .timer.warning {
+            color: var(--color-red-500);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .page-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-24);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-content {
+            background: var(--color-white);
+            border-radius: var(--radius-md);
+            padding: var(--space-32);
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-front h3 {
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        .card-front .scenario {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-charcoal-800);
+            line-height: 1.6;
+        }
+
+        .card-back {
+            text-align: center;
+        }
+
+        .card-back h3 {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-12);
+        }
+
+        .card-back .action {
+            font-size: 14px;
+            background: rgba(33, 128, 141, 0.05);
+            padding: var(--space-16);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--color-primary);
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin-top: var(--space-16);
+        }
+
+        .page-footer {
+            background: var(--color-charcoal-800);
+            padding: var(--space-16);
+            display: flex;
+            gap: var(--space-12);
+            justify-content: center;
+            border-top: 1px solid var(--color-gray-300);
+        }
+
+        .page-footer button {
+            margin: 0;
+        }
+
+        /* Card Navigation */
+        .card-nav {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-12);
+            margin-top: var(--space-24);
+            padding-top: var(--space-24);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .card-nav button {
+            padding: var(--space-8) var(--space-12);
+            font-size: 12px;
+        }
+
+        .card-counter {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            align-self: center;
+        }
+
+        /* STATE: Completion View */
+        .completion-view {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-32);
+            text-align: center;
+            max-width: 600px;
+            margin: var(--space-32) auto;
+        }
+
+        .completion-check {
+            font-size: 48px;
+            color: var(--color-success);
+            margin-bottom: var(--space-20);
+        }
+
+        .completion-message {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-12);
+            color: var(--color-charcoal-800);
+        }
+
+        .completion-stat {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+
+        .completion-buttons {
+            display: flex;
+            gap: var(--space-12);
+            justify-content: center;
+            margin-top: var(--space-24);
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-secondary {
+            color: var(--color-text-secondary);
+        }
+
+        .mt-16 {
+            margin-top: var(--space-16);
+        }
+
+        .mb-16 {
+            margin-bottom: var(--space-16);
+        }
+    </style>
+</head>
+<body>
+    <div class="dojo-container">
+        <!-- STATE 1: Time Window Selection -->
+        <div id="timeWindowView" class="view-wrapper active">
+            <div class="selection-view">
+                <h1>Choose Your Time Window</h1>
+                <div class="window-grid">
+                    <div class="window-card" data-window="sprint">
+                        <h3>Duration</h3>
+                        <div class="duration">10 min</div>
+                        <div class="description">The Sprint. Quick reps, high velocity.</div>
+                    </div>
+                    <div class="window-card" data-window="standard">
+                        <h3>Duration</h3>
+                        <div class="duration">25 min</div>
+                        <div class="description">The Standard. Classic Pomodoro focus.</div>
+                    </div>
+                    <div class="window-card" data-window="grind">
+                        <h3>Duration</h3>
+                        <div class="duration">45 min</div>
+                        <div class="description">The Grind. Deep dive, build mastery.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATE 2: Block Selection -->
+        <div id="blockView" class="view-wrapper">
+            <div class="block-view">
+                <div class="block-header">
+                    <h2 id="blockTitle">Choose Your Block</h2>
+                    <div class="block-meta">
+                        <span class="meta-item">Time Window: <span class="meta-badge" id="displayWindow">25 min</span></span>
+                    </div>
+                </div>
+
+                <div id="blocksContainer"></div>
+
+                <div style="display: flex; gap: var(--space-12); margin-top: var(--space-32);">
+                    <button class="secondary" onclick="state.goBack()">Back</button>
+                    <button class="primary" onclick="state.selectBlock()" disabled id="selectBlockBtn">Select Block</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATE 3: Drill Page (One-Page React-like App) -->
+        <div id="pageView" class="view-wrapper">
+            <div class="page-header">
+                <span id="pageBlockName">Block</span>
+                <div class="timer" id="timerDisplay">25:00</div>
+                <button onclick="state.endSession()" style="background: none; color: var(--color-text-secondary); border: 1px solid var(--color-gray-300); padding: var(--space-8);">Exit</button>
+            </div>
+
+            <div class="page-body">
+                <div class="card-content">
+                    <div id="cardFront" class="card-front">
+                        <h3>Scenario</h3>
+                        <p class="scenario" id="scenarioText">Loading...</p>
+                    </div>
+                    <div id="cardBack" class="card-back" style="display: none;">
+                        <h3>Action</h3>
+                        <div class="action" id="actionText">Loading...</div>
+                    </div>
+                    <div class="card-nav">
+                        <button class="secondary" onclick="state.flipCard()">Flip Card</button>
+                        <span class="card-counter"><span id="cardIndex">1</span> / <span id="cardTotal">3</span></span>
+                        <button class="secondary" onclick="state.nextCard()" id="nextCardBtn" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <button class="secondary" onclick="state.pauseTimer()">Pause</button>
+                <button class="primary" onclick="state.completeSession()">Complete Session</button>
+            </div>
+        </div>
+
+        <!-- STATE 4: Completion -->
+        <div id="completionView" class="view-wrapper">
+            <div class="completion-view">
+                <div class="completion-check">✓</div>
+                <div class="completion-message">Session Complete</div>
+                <div class="completion-stat" id="sessionStats">25 minutes • 3 cards drilled</div>
+                <div class="mt-16">
+                    <p class="text-secondary">Ship this to Shell?</p>
+                    <p style="font-size: 12px; color: var(--color-text-secondary);">Create a knowledge atom from your session.</p>
+                </div>
+                <div class="completion-buttons">
+                    <button class="secondary" onclick="state.restart()">Train Again</button>
+                    <button class="primary" onclick="state.shipToShell()">Ship to Shell</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Training Blocks
+        const blocks = {
+            sprint: {
+                duration: 10,
+                items: [
+                    {
+                        id: 'control-001',
+                        title: 'Control the Deck, Release the Draft',
+                        theme: 'Hands + Brain Sync',
+                        skills: {
+                            physical: { name: 'Overhand Shuffle Control', description: 'Keep top card intact through shuffle.' },
+                            mental: { name: 'Ugly First Draft (TUFD)', description: 'Embrace imperfect output, editing kills flow.' }
+                        },
+                        cards: [
+                            {
+                                front: 'Scenario: You are sitting in your workspace. Describe this room as if it were a crime scene. Cold, analytical, investigative.',
+                                back: 'Action:\n1. Shuffle deck 3x\n2. Write 3 min without stopping\n3. No deletions allowed\n4. Shuffle again to reset'
+                            },
+                            {
+                                front: 'Scenario: Same room. Now describe it as a sanctuary. Warm, safe, inviting.',
+                                back: 'Action:\n1. Palm card in hand\n2. Write 3 min describing the feeling\n3. Notice the difference in tone\n4. Shuffle once to complete'
+                            },
+                            {
+                                front: 'Scenario: Combine both perspectives into one coherent description.',
+                                back: 'Action:\n1. Riffle shuffle (in air)\n2. Synthesize both tones\n3. Write 2 min final version\n4. Mark: SHIP or ITERATE'
+                            }
+                        ]
+                    }
+                ]
+            },
+            standard: {
+                duration: 25,
+                items: [
+                    {
+                        id: 'interlock-002',
+                        title: 'The Interlock: Plan Before You Ink',
+                        theme: 'Structure + Clarity',
+                        skills: {
+                            physical: { name: 'Riffle Shuffle (Perfect Distribution)', description: 'Even interlock, consistent rhythm.' },
+                            mental: { name: 'Think Before You Ink (Outlining)', description: 'Structure before draft. Skeleton before flesh.' }
+                        },
+                        cards: [
+                            {
+                                front: 'Scenario: How would you explain Drop Frame to someone unfamiliar with it?',
+                                back: 'Action:\n1. Riffle shuffle in air\n2. Write headers only (no sentences)\n3. Create a skeleton outline\n4. Keep it to 5 main points'
+                            },
+                            {
+                                front: 'Scenario: What is the single most important thing they need to know first?',
+                                back: 'Action:\n1. Locate key card\n2. Write a thesis statement\n3. One sentence that captures it all\n4. Make it punchy'
+                            },
+                            {
+                                front: 'Scenario: How would you teach this skill to someone else?',
+                                back: 'Action:\n1. Perfect riffle shuffle\n2. Convert outline to teaching flow\n3. Number steps 1-5\n4. Review for clarity'
+                            }
+                        ]
+                    }
+                ]
+            },
+            grind: {
+                duration: 45,
+                items: [
+                    {
+                        id: 'hidden-003',
+                        title: 'The Hidden Move: Pathological Empathy',
+                        theme: 'Subtlety + Audience',
+                        skills: {
+                            physical: { name: 'The Glide (Invisible Second Card)', description: 'Pinky control, no tells.' },
+                            mental: { name: 'You-Focused Writing', description: 'Hide ego, serve the reader.' }
+                        },
+                        cards: [
+                            {
+                                front: 'Scenario: You are selling Drop Frame to a prospect. They do not care about your system—they care about solving their problem.',
+                                back: 'Action:\n1. Practice glide 10x\n2. Identify their core problem\n3. Rewrite your pitch from THEM perspective\n4. Replace every "we" with "you"'
+                            },
+                            {
+                                front: 'Scenario: Write 5 different value propositions. Each one should hide your process and show THEIR transformation.',
+                                back: 'Action:\n1. Glide: deal bottom card invisibly\n2. Write first version: "We offer X"\n3. Rewrite: "You get Y"\n4. Repeat for 5 variations'
+                            },
+                            {
+                                front: 'Scenario: Which variation is the strongest? Why?',
+                                back: 'Action:\n1. Perfect glide (pinky tension zero)\n2. Circle strongest line\n3. Note what makes it land\n4. Copy that pattern'
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // State Management
+        const state = {
+            currentWindow: null,
+            currentBlock: null,
+            currentCard: 0,
+            timeRemaining: 0,
+            timerInterval: null,
+            cardFlipped: false,
+            sessionStartTime: null,
+            completedCards: 0,
+
+            selectTimeWindow(window) {
+                this.currentWindow = window;
+                this.timeRemaining = blocks[window].duration * 60;
+                this.renderBlocks();
+                this.showView('blockView');
+            },
+
+            renderBlocks() {
+                const container = document.getElementById('blocksContainer');
+                container.innerHTML = '';
+                const blockItems = blocks[this.currentWindow].items;
+                
+                blockItems.forEach(block => {
+                    const div = document.createElement('div');
+                    div.className = 'block-description';
+                    div.style.cursor = 'pointer';
+                    div.style.borderLeft = '3px solid var(--color-primary)';
+                    div.style.marginBottom = 'var(--space-16)';
+                    div.innerHTML = `
+                        <h3>${block.title}</h3>
+                        <p style="margin: var(--space-12) 0 0 0;">${block.theme}</p>
+                        <div style="margin-top: var(--space-12); font-size: 11px; color: var(--color-text-secondary);">
+                            Physical: ${block.skills.physical.name} • Mental: ${block.skills.mental.name}
+                        </div>
+                    `;
+                    div.onclick = () => {
+                        document.querySelectorAll('.block-description').forEach(b => b.style.borderColor = 'var(--color-primary)');
+                        div.style.borderColor = 'var(--color-teal-300)';
+                        div.style.borderWidth = '3px';
+                        this.currentBlock = block;
+                        document.getElementById('selectBlockBtn').disabled = false;
+                    };
+                    container.appendChild(div);
+                });
+
+                const windowName = { sprint: '10 min', standard: '25 min', grind: '45 min' }[this.currentWindow];
+                document.getElementById('displayWindow').textContent = windowName;
+            },
+
+            selectBlock() {
+                if (!this.currentBlock) return;
+                this.currentCard = 0;
+                this.cardFlipped = false;
+                this.sessionStartTime = Date.now();
+                this.startTimer();
+                this.renderCard();
+                this.showView('pageView');
+            },
+
+            renderCard() {
+                const card = this.currentBlock.cards[this.currentCard];
+                document.getElementById('scenarioText').textContent = card.front;
+                document.getElementById('actionText').textContent = card.back;
+                document.getElementById('cardFront').style.display = 'flex';
+                document.getElementById('cardBack').style.display = 'none';
+                document.getElementById('nextCardBtn').disabled = this.currentCard === this.currentBlock.cards.length - 1;
+                document.getElementById('cardIndex').textContent = this.currentCard + 1;
+                document.getElementById('cardTotal').textContent = this.currentBlock.cards.length;
+                document.getElementById('pageBlockName').textContent = this.currentBlock.title;
+                this.cardFlipped = false;
+            },
+
+            flipCard() {
+                this.cardFlipped = !this.cardFlipped;
+                document.getElementById('cardFront').style.display = this.cardFlipped ? 'none' : 'flex';
+                document.getElementById('cardBack').style.display = this.cardFlipped ? 'block' : 'none';
+            },
+
+            nextCard() {
+                if (this.currentCard < this.currentBlock.cards.length - 1) {
+                    this.currentCard++;
+                    this.renderCard();
+                    this.completedCards++;
+                }
+            },
+
+            startTimer() {
+                const updateTimer = () => {
+                    const mins = Math.floor(this.timeRemaining / 60);
+                    const secs = this.timeRemaining % 60;
+                    document.getElementById('timerDisplay').textContent = 
+                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    
+                    if (this.timeRemaining <= 60) {
+                        document.getElementById('timerDisplay').classList.add('warning');
+                    }
+
+                    if (this.timeRemaining > 0) {
+                        this.timeRemaining--;
+                    } else {
+                        clearInterval(this.timerInterval);
+                        this.completeSession();
+                    }
+                };
+                
+                updateTimer();
+                this.timerInterval = setInterval(updateTimer, 1000);
+            },
+
+            pauseTimer() {
+                clearInterval(this.timerInterval);
+                alert('Timer paused. Click to resume.');
+                this.startTimer();
+            },
+
+            completeSession() {
+                clearInterval(this.timerInterval);
+                const elapsed = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                document.getElementById('sessionStats').textContent = 
+                    `${mins} minutes • ${this.currentCard + 1} cards drilled`;
+                this.showView('completionView');
+            },
+
+            shipToShell() {
+                const logEntry = {
+                    timestamp: new Date().toISOString(),
+                    block: this.currentBlock.id,
+                    window: this.currentWindow,
+                    cardsCompleted: this.currentCard + 1,
+                    content: `Learning Log: ${this.currentBlock.title}`
+                };
+                console.log('Shipping to Shell:', logEntry);
+                alert('Knowledge atom logged:\n' + JSON.stringify(logEntry, null, 2));
+                this.restart();
+            },
+
+            restart() {
+                this.currentWindow = null;
+                this.currentBlock = null;
+                this.currentCard = 0;
+                this.cardFlipped = false;
+                this.completedCards = 0;
+                document.getElementById('timerDisplay').classList.remove('warning');
+                this.showView('timeWindowView');
+            },
+
+            goBack() {
+                this.currentBlock = null;
+                this.showView('timeWindowView');
+            },
+
+            endSession() {
+                if (confirm('Exit session? Progress will be logged.')) {
+                    clearInterval(this.timerInterval);
+                    this.completeSession();
+                }
+            },
+
+            showView(viewId) {
+                document.querySelectorAll('.view-wrapper').forEach(v => v.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+            }
+        };
+
+        // Event Listeners
+        document.querySelectorAll('.window-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                document.querySelectorAll('.window-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                state.selectTimeWindow(card.dataset.window);
+            });
+        });
+    </script>
+</body>
+</html>

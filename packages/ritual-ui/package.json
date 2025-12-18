@@ -1,0 +1,36 @@
+{
+  "name": "@gttm/ritual-ui",
+  "version": "0.0.2",
+  "main": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && pnpm build:ui",
+    "build:clean": "rm -rf dist && mkdir dist",
+    "build:ui": "bun run scripts/build-ui.ts"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    },
+    "./variables.css": "./dist/variables.css",
+    "./ritual-ui.css": "./dist/ritual-ui.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^20.19.25",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@gttm/ritual-brand": "workspace:*",
+    "lucide-react": "^0.556.0"
+  }
+}

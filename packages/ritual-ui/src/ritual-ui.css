@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* 1. Import the Variables from Brand */
+@import "../../ritual-brand/src/ritual.css";
+
+/* 2. Scan THIS package (Self-Contained) */
+@source ".";

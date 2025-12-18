@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+
+
+:root {
+  /* Semantic mappings if not in @theme yet, or overrides */
+  --background: var(--color-zinc-950); 
+  --foreground: var(--color-zinc-50);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

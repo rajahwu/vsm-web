@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment Variables
+.env
+.env*.local
+
+# System Files
+.DS_Store
+Thumbs.db
