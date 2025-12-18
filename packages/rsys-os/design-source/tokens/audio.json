@@ -1,0 +1,308 @@
+{
+  "schemaVersion": "2.0",
+  "basePath": "/assets/audio/",
+  "phases": {
+    "plan": {
+      "name": "Plan",
+      "defaultTrack": "five-smooth-stones_v1",
+      "shuffle": false,
+      "loop": true,
+      "tracks": [
+        {
+          "id": "five-smooth-stones_v1",
+          "title": "Five Smooth Stones",
+          "filename": "plan_five-smooth-stones_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["blues", "rock", "gritty"],
+          "bpm": 90,
+          "durationSec": null
+        },
+        {
+          "id": "five-smooth-stones_v2",
+          "title": "Five Smooth Stones (Alt)",
+          "filename": "plan_five-smooth-stones_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["blues", "rock", "gritty"],
+          "bpm": 90,
+          "durationSec": null
+        },
+        {
+          "id": "foundation-stones_v1",
+          "title": "Foundation Stones",
+          "filename": "plan_foundation-stones_v1.wav",
+          "version": 1,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ambient", "building", "cinematic"],
+          "bpm": 85,
+          "durationSec": null
+        },
+        {
+          "id": "foundation-stones_v2",
+          "title": "Foundation Stones (Alt)",
+          "filename": "plan_foundation-stones_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ambient", "building", "cinematic"],
+          "bpm": 85,
+          "durationSec": null
+        }
+      ]
+    },
+    "sprint": {
+      "name": "Sprint",
+      "defaultTrack": "sprezzatura_v1",
+      "shuffle": false,
+      "loop": true,
+      "tracks": [
+        {
+          "id": "sprezzatura_v1",
+          "title": "High Velocity (Sprezzatura)",
+          "filename": "sprint_sprezzatura_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["industrial", "driving", "instrumental", "focus"],
+          "bpm": 140,
+          "durationSec": null
+        },
+        {
+          "id": "sprezzatura_v2",
+          "title": "High Velocity (Sprezzatura) Alt",
+          "filename": "sprint_sprezzatura_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["industrial", "driving", "instrumental", "focus"],
+          "bpm": 140,
+          "durationSec": null
+        }
+      ]
+    },
+    "rest": {
+      "name": "Rest",
+      "defaultTrack": "moonlight-protocol_v1",
+      "shuffle": false,
+      "loop": true,
+      "tracks": [
+        {
+          "id": "moonlight-protocol_v1",
+          "title": "The Moonlight Protocol",
+          "filename": "rest_moonlight-protocol_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["ambient", "calm", "restorative"],
+          "bpm": 60,
+          "durationSec": null
+        },
+        {
+          "id": "moonlight-protocol_v2",
+          "title": "The Moonlight Protocol (Alt)",
+          "filename": "rest_moonlight-protocol_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ambient", "calm", "restorative"],
+          "bpm": 60,
+          "durationSec": null
+        },
+        {
+          "id": "moonlight-pause_v1",
+          "title": "Moonlight Pause",
+          "filename": "rest_moonlight-pause_v1.wav",
+          "version": 1,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ambient", "pause", "breath"],
+          "bpm": 55,
+          "durationSec": null
+        },
+        {
+          "id": "moonlit-pause_v1",
+          "title": "Moonlit Pause",
+          "filename": "rest_moonlit-pause_v1.wav",
+          "version": 1,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ambient", "pause", "gentle"],
+          "bpm": 55,
+          "durationSec": null
+        }
+      ]
+    },
+    "reflect": {
+      "name": "Reflect",
+      "defaultTrack": "mirror-solo_v1",
+      "shuffle": false,
+      "loop": true,
+      "tracks": [
+        {
+          "id": "mirror-solo_v1",
+          "title": "Mirror Solo",
+          "filename": "reflect_mirror-solo_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["introspective", "solo", "contemplative"],
+          "bpm": 70,
+          "durationSec": null
+        }
+      ]
+    },
+    "recover": {
+      "name": "Recover",
+      "defaultTrack": "ensemble_v1",
+      "shuffle": false,
+      "loop": true,
+      "tracks": [
+        {
+          "id": "ensemble_v1",
+          "title": "Recovery Ensemble",
+          "filename": "recover_ensemble_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["ensemble", "gratitude", "closure"],
+          "bpm": 80,
+          "durationSec": null
+        },
+        {
+          "id": "ensemble_v2",
+          "title": "Recovery Ensemble (Alt)",
+          "filename": "recover_ensemble_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["ensemble", "gratitude", "closure"],
+          "bpm": 80,
+          "durationSec": null
+        }
+      ]
+    },
+    "anthem": {
+      "name": "Anthem",
+      "defaultTrack": "drunk-text_v1",
+      "shuffle": false,
+      "loop": false,
+      "tracks": [
+        {
+          "id": "drunk-text_v1",
+          "title": "The Drunk Text to Nobody",
+          "filename": "anthem_drunk-text_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["vocal", "anthem", "raw", "manifesto"],
+          "bpm": 120,
+          "durationSec": null
+        },
+        {
+          "id": "drunk-text_v2",
+          "title": "The Drunk Text to Nobody (Alt)",
+          "filename": "anthem_drunk-text_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["vocal", "anthem", "raw", "manifesto"],
+          "bpm": 120,
+          "durationSec": null
+        },
+        {
+          "id": "fools-chime_v1",
+          "title": "The Fool's Chime",
+          "filename": "anthem_fools-chime_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["chime", "ritual", "beginning"],
+          "bpm": 100,
+          "durationSec": null
+        },
+        {
+          "id": "fools-chime_v2",
+          "title": "The Fool's Chime (Alt)",
+          "filename": "anthem_fools-chime_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["chime", "ritual", "beginning"],
+          "bpm": 100,
+          "durationSec": null
+        },
+        {
+          "id": "zero-point_v1",
+          "title": "The Zero Point",
+          "filename": "anthem_zero-point_v1.wav",
+          "version": 1,
+          "rating": 5,
+          "favorite": true,
+          "tags": ["origin", "reset", "version-zero"],
+          "bpm": 90,
+          "durationSec": null
+        },
+        {
+          "id": "zero-point_v2",
+          "title": "The Zero Point (V2)",
+          "filename": "anthem_zero-point_v2.wav",
+          "version": 2,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["origin", "reset", "version-zero"],
+          "bpm": 90,
+          "durationSec": null
+        },
+        {
+          "id": "zero-point_v3",
+          "title": "The Zero Point (V3)",
+          "filename": "anthem_zero-point_v3.wav",
+          "version": 3,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["origin", "reset", "version-zero"],
+          "bpm": 90,
+          "durationSec": null
+        },
+        {
+          "id": "zero-point_v4",
+          "title": "The Zero Point (V4)",
+          "filename": "anthem_zero-point_v4.wav",
+          "version": 4,
+          "rating": 4,
+          "favorite": false,
+          "tags": ["origin", "reset", "version-zero"],
+          "bpm": 90,
+          "durationSec": null
+        }
+      ]
+    }
+  },
+  "playlists": {
+    "default": {
+      "name": "Default Ritual",
+      "description": "Standard phase-based playlist",
+      "tracks": []
+    },
+    "deep-work": {
+      "name": "Deep Work",
+      "description": "Extended focus session",
+      "tracks": ["sprint_sprezzatura_v1", "plan_foundation-stones_v1"]
+    },
+    "wind-down": {
+      "name": "Wind Down",
+      "description": "Gentle recovery",
+      "tracks": ["rest_moonlight-protocol_v1", "recover_ensemble_v1"]
+    }
+  },
+  "settings": {
+    "crossfadeDurationMs": 2000,
+    "defaultVolume": 0.5,
+    "fadeInDurationMs": 1000,
+    "fadeOutDurationMs": 1000
+  }
+}

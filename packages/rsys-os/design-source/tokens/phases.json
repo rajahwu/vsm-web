@@ -1,0 +1,52 @@
+[
+  { 
+    "id": "plan", 
+    "name": "Plan", 
+    "gesture": "Name the boundary. One thing.",
+    "prompt": "What is this session about?",
+    "duration": 120,
+    "color": "bg-amber-500",
+    "textColor": "text-amber-500",
+    "borderColor": "border-amber-500"
+  },
+  { 
+    "id": "sprint", 
+    "name": "Sprint", 
+    "gesture": "Work inside the boundary. Note drift, return.",
+    "prompt": "What happened?",
+    "duration": 5400,
+    "color": "bg-emerald-500",
+    "textColor": "text-emerald-500",
+    "borderColor": "border-emerald-500"
+  },
+  { 
+    "id": "rest", 
+    "name": "Rest", 
+    "gesture": "Stop. Mark completion even if incomplete.",
+    "prompt": "What state is it in?",
+    "duration": 300,
+    "color": "bg-sky-500",
+    "textColor": "text-sky-500",
+    "borderColor": "border-sky-500"
+  },
+  { 
+    "id": "reflect", 
+    "name": "Reflect", 
+    "gesture": "Read what you did. One observation.",
+    "prompt": "What worked, drifted, or needs refusing?",
+    "duration": 300,
+    "color": "bg-violet-500",
+    "textColor": "text-violet-500",
+    "borderColor": "border-violet-500"
+  },
+  { 
+    "id": "recover", 
+    "name": "Recover", 
+    "gesture": "Clear the space. Reset the loom.",
+    "prompt": "Anything to carry forward? (Optional)",
+    "duration": 120,
+    "color": "bg-rose-500",
+    "textColor": "text-rose-500",
+    "borderColor": "border-rose-500"
+  }
+]

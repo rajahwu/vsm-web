@@ -1,0 +1,12 @@
+{
+  "name": "@rsys-os/design-source",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./tokens/audio.json": "./tokens/audio.json",
+    "./tokens/colors.json": "./tokens/colors.json",
+    "./tokens/phases.json": "./tokens/phases.json",
+    "./tokens/spacing.json": "./tokens/spacing.json",
+    "./tokens/typography.json": "./tokens/typography.json"
+  }
+}

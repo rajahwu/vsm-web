@@ -18,6 +18,7 @@ export function Sidebar() {
         </div>
         
         <NavLink href="/" label="Cycle Tracker" icon="⚡" />
+        <NavLink href="/genesis" label="Genesis Curriculum" icon="📚" />
         <NavLink href="/editor" label="The Editor" icon="📝" />
         <NavLink href="/blackjack" label="Trainer (Sim)" icon="♠️" />
       </nav>

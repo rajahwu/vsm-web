@@ -1,15 +1,20 @@
 {
-  "name": "vsm_school_merger",
+  "name": "@rsys/vsm_school_merger",
   "version": "1.0.0",
-  "description": "",
+  "description": "VSM Training System - Ritual-based productivity training platform",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
+    "build": "pnpm -r --filter './packages/**' build && pnpm -r --filter './apps/**' build",
+    "dev": "pnpm --filter vsm-school-web dev",
+    "clean": "pnpm -r exec rm -rf dist .next node_modules/.cache",
+    "build:packages": "pnpm -r --filter './packages/**' build",
+    "build:app": "pnpm --filter vsm-school-web build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["vsm", "ritual", "productivity", "training"],
   "author": "",
   "license": "ISC",
   "type": "commonjs"
