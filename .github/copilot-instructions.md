@@ -2,6 +2,39 @@
 
 This codebase implements the **VSM (Velocity State Machine) Training System** — a productivity methodology training platform with ritual-based time management and phase-based learning cycles.
 
+## Canonical Naming System (CRITICAL)
+
+**🚨 ENFORCE THIS NAMING IN ALL CODE AND UI:**
+
+### Core Terms (Locked)
+- **Codex** → Lore/doctrine (read-only, non-blocking)
+- **Pulse** → Time window + rhythm (already correct)
+- **Prime** → State alignment (timed conditioning)
+- **Produce** → Work surface (value creation)
+- **Archive** → Persistence (knowledge atoms)
+
+### 6-Step Mission Flow
+```
+Pulse → Codex → Track → Prime → Produce → Archive
+```
+
+### Forbidden Terms
+❌ **NEVER USE:** Blackout, Transmission, Dojo, Forge, Ship to Shell
+- These are legacy terms from earlier iterations
+- Use the canonical replacements above
+
+### Component Naming
+- `CardRitual` - 4-phase execution (codex → instruction → prime → produce)
+- `WorkSurface` - Output capture editor (NOT ForgeEditor)
+- `CodexViewer` - Narrative/lore display (NOT ProtocolBlackout)
+- `MissionSurface` - 6-step orchestrator
+
+### Data Model Terms
+- Session type: `vsm_session` (NOT training_session)
+- Atom types: Use action verbs (archive, produce) not metaphors
+
+**Reference:** [apps/vsm-school-web/naming-canonical-lock.md](apps/vsm-school-web/naming-canonical-lock.md)
+
 ## Architecture Overview
 
 This is a **pnpm workspace monorepo** with four main packages:
@@ -64,16 +97,18 @@ The system revolves around 5 ritual phases (see [packages/ritual/ui-lib/src/phas
 
 Every timer, color scheme, and UI flow is organized around these phases.
 
-### Four-State Training Hierarchy
+### Six-Step Session Flow
 
-The VSM training flow (documented in [docs/specs/vsm-training-dojo.md](docs/specs/vsm-training-dojo.md)) follows:
+The VSM session flow (documented in [docs/specs/vsm-training-dojo.md](docs/specs/vsm-training-dojo.md)) follows:
 
-1. **Time Window Selection**: Choose duration (Sprint 10m, Standard 25m, Grind 45m)
-2. **Block Selection**: Pick training block (curriculum units with physical + mental components)
-3. **Page View (Drill Mat)**: Full-screen immersive card-flip training interface
-4. **Completion View**: Session stats + "Ship to Shell" knowledge atom logging
+1. **Pulse**: Choose time window (Sprint 10m, Standard 25m, Grind 45m)
+2. **Codex**: Optional doctrinal framing (skippable)
+3. **Track**: Select training track (Genesis / Source Code / Powerhouse)
+4. **Prime**: Timed state alignment drill (30-60 seconds)
+5. **Produce**: Work surface for output capture
+6. **Archive**: Session completion + knowledge atom logging
 
-**Pattern**: Each state is fully self-contained — no navigation chrome during drill execution.
+**Pattern**: Each step is full-screen, thumb-driven, part of continuous flow.
 
 ## Key File Locations
 
@@ -169,10 +204,10 @@ No test suite exists yet. `package.json` has placeholder:
 From `docs/specs/TODO.md`:
 
 - **Supabase**: Auth + training data persistence
-- **Shell API**: Replace `console.log("Shipping to Shell...")` with real POST endpoint
+- **Archive API**: Replace `console.log("Archiving...")` with real Supabase write
 - **Content Factor API**: Dynamic training block loading (currently hardcoded)
 
-**Pattern**: API integration points are marked with console logs — search for "Ship to Shell" or "Content Factor" comments.
+**Pattern**: API integration points write to atoms table with type `vsm_session`.
 
 ## Naming Conventions
 
