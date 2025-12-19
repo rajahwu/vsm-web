@@ -1,33 +1,44 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button"; // Standardized shadcn
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-interface ForgeEditorProps {
+/* =========================
+   Props
+   ========================= */
+
+interface WorkSurfaceProps {
   card: {
     id: string;
     title: string;
     drill: { prompt: string };
-    forgePrompt: string; // "In 5-8 sentences, describe..."
+    forgePrompt?: string;
   };
-  sessionId: string;
-  remainingTime: string; // Passed from the Pulse timer
   onShip: (output: string) => Promise<void>;
 }
 
-export const ForgeEditor: React.FC<ForgeEditorProps> = ({ 
-  card, 
-  sessionId, 
-  remainingTime, 
-  onShip 
+/* =========================
+   WorkSurface
+   ========================= */
+
+export const WorkSurface: React.FC<WorkSurfaceProps> = ({
+  card,
+  onShip,
 }) => {
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState('');
   const [isShipping, setIsShipping] = useState(false);
 
-  const handleShip = async () => {
-    setIsShipping(true);
-    await onShip(content);
-    setIsShipping(false);
-  };
+  async function handleShip() {
+    if (!content.trim()) return;
+
+    try {
+      setIsShipping(true);
+      await onShip(content);
+    } finally {
+      setIsShipping(false);
+    }
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground p-4">
@@ -35,7 +46,6 @@ export const ForgeEditor: React.FC<ForgeEditorProps> = ({
       <header className="border-b pb-4 mb-4">
         <div className="flex justify-between items-center text-xs uppercase tracking-widest text-muted-foreground mb-2">
           <span>{card.title}</span>
-          <span className="text-emerald-500 font-mono">{remainingTime}</span>
         </div>
         <h2 className="text-sm font-bold text-emerald-400">
           HINT: {card.drill.prompt}
@@ -44,9 +54,12 @@ export const ForgeEditor: React.FC<ForgeEditorProps> = ({
 
       {/* The Workspace */}
       <div className="flex-1 flex flex-col gap-4">
-        <p className="text-sm italic text-muted-foreground">
-          {card.forgePrompt}
-        </p>
+        {card.forgePrompt && (
+          <p className="text-sm italic text-muted-foreground">
+            {card.forgePrompt}
+          </p>
+        )}
+
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -55,14 +68,14 @@ export const ForgeEditor: React.FC<ForgeEditorProps> = ({
         />
       </div>
 
-      {/* Ship Action */}
+      {/* Archive Action */}
       <footer className="mt-4 pt-4 border-t">
-        <Button 
-          onClick={handleShip} 
-          disabled={!content || isShipping}
+        <Button
+          onClick={handleShip}
+          disabled={!content.trim() || isShipping}
           className="w-full py-6 text-lg bg-emerald-600 hover:bg-emerald-500 font-bold uppercase tracking-tighter"
         >
-          {isShipping ? "SHIPPING..." : "SHIP TO SHELL"}
+          {isShipping ? 'ARCHIVING…' : 'ARCHIVE OUTPUT'}
         </Button>
       </footer>
     </div>

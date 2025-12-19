@@ -1,47 +1,171 @@
+'use client';
+
 import React, { useState } from 'react';
-import { StoryPlayer } from './StoryPlayer'; // Transmission
-import { CardRitual } from './CardRitual';   // Dojo
-import { ForgeEditor } from './ForgeEditor'; // Forge
-import { MISSION_TRACKS, MISSION_CARDS } from '@/lib/registry'; //
+
+import { CodexViewer } from './CodexViewer';
+import { PrimePanel } from './PrimePanel';
+import { WorkSurface } from './WorkSurface';
+import { MissionSuccess } from './MissionSuccess';
+
+import type {
+  MissionTrackId,
+  MissionCardId,
+  MissionCard,
+  RitualPhase,
+} from '@/lib/registry';
+
+import {
+  MISSION_REGISTRY as MISSION_TRACKS,
+  CARD_REGISTRY as MISSION_CARDS,
+} from '@/lib/registry';
+
+/* =========================
+   Mission State
+   ========================= */
+
+interface MissionState {
+  selectedTrackId?: MissionTrackId;
+  selectedCardId?: MissionCardId;
+  phaseIndex: number;
+}
+
+/* =========================
+   MissionSurface
+   ========================= */
 
 export const MissionSurface: React.FC = () => {
-  const [phase, setPhase] = useState<"transmission" | "dojo" | "forge">("transmission");
-  const [activeCardId, setActiveCardId] = useState("dot"); // Example start
-  
-  const activeCard = MISSION_CARDS[activeCardId];
-  const activeTrack = MISSION_TRACKS[activeCard.trackId];
+  const [state, setState] = useState<MissionState>({
+    phaseIndex: 0,
+  });
 
-  // Phase Transition Logic
-  return (
-    <main className="min-h-screen bg-black text-white overflow-hidden">
-      {/* 1. Transmission Phase: The "Why" */}
-      {phase === "transmission" && (
-        <StoryPlayer 
-          storyId={activeCard.lessonRef.slug} 
-          onComplete={() => setPhase("dojo")} 
+  /* =========================
+     Derived Data (Authoritative)
+     ========================= */
+
+  const selectedCard: MissionCard | undefined =
+    state.selectedCardId
+      ? MISSION_CARDS[state.selectedCardId]
+      : undefined;
+
+  const currentPhase: RitualPhase | undefined =
+    selectedCard?.phases[state.phaseIndex];
+
+  /* =========================
+     State Transitions
+     ========================= */
+
+  function startTrack(trackId: MissionTrackId) {
+    const track = MISSION_TRACKS[trackId];
+    const firstCardId = track.cards[0];
+
+    setState({
+      selectedTrackId: trackId,
+      selectedCardId: firstCardId,
+      phaseIndex: 0,
+    });
+  }
+
+  function advancePhase() {
+    if (!selectedCard) return;
+
+    const nextIndex = state.phaseIndex + 1;
+
+    if (nextIndex < selectedCard.phases.length) {
+      setState(prev => ({
+        ...prev,
+        phaseIndex: nextIndex,
+      }));
+    } else {
+      // End of ritual → archive
+      setState(prev => ({
+        ...prev,
+        phaseIndex: selectedCard.phases.length, // sentinel
+      }));
+    }
+  }
+
+  function resetToTrackSelect() {
+    setState({
+      phaseIndex: 0,
+    });
+  }
+
+  /* =========================
+     Render Guards
+     ========================= */
+
+  // No card yet → Track selection is the entry point
+  if (!selectedCard || !currentPhase) {
+    return (
+      <div className="p-6">
+        <h2 className="text-lg font-bold mb-4">Select Track</h2>
+        {Object.values(MISSION_TRACKS)
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          .map(track => (
+            <button
+              key={track.id}
+              className="block w-full text-left p-3 mb-2 border rounded"
+              onClick={() => startTrack(track.id)}
+            >
+              <div className="font-semibold">{track.title}</div>
+              <div className="text-sm text-muted-foreground">
+                {track.description}
+              </div>
+            </button>
+          ))}
+      </div>
+    );
+  }
+
+  /* =========================
+     Phase Router (Single Source of Truth)
+     ========================= */
+
+  switch (currentPhase) {
+    /* -------- CODEX / INSTRUCTION -------- */
+    case 'codex':
+    case 'instruction': {
+      const slug = selectedCard.lessonRef?.slug;
+
+      return (
+        <CodexViewer
+          slug={slug}
+          onContinue={advancePhase}
+          onSkip={advancePhase}
         />
-      )}
+      );
+    }
 
-      {/* 2. Dojo Phase: Conditioning */}
-      {phase === "dojo" && (
-        <CardRitual 
-          card={activeCard}
-          onDojoComplete={() => setPhase("forge")} 
+    /* -------- PRIME -------- */
+    case 'prime':
+      return (
+        <PrimePanel
+          card={selectedCard}
+          onComplete={advancePhase}
         />
-      )}
+      );
 
-      {/* 3. Forge Phase: Execution */}
-      {phase === "forge" && (
-        <ForgeEditor 
-          card={activeCard}
-          sessionId="temp-session-id"
-          remainingTime="07:45" // Linked to the Pulse
-          onShip={async (content) => {
-            await shipToShell(content, activeCardId);
-            // Logic to unlock next card or return to track
+    /* -------- PRODUCE -------- */
+    case 'produce':
+      return (
+        <WorkSurface
+          card={selectedCard}
+          onShip={async (_output: string) => {
+            // Persistence happens here later (Supabase)
+            advancePhase();
           }}
         />
-      )}
-    </main>
-  );
+      );
+
+    /* -------- ARCHIVE / SUCCESS -------- */
+    default:
+      return (
+        <MissionSuccess
+          cardTitle={selectedCard.title}
+          literacyGain={25}
+          newTotalLiteracy={50}
+          onContinue={resetToTrackSelect}
+        />
+      );
+  }
 };

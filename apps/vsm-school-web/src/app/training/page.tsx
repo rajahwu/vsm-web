@@ -1,87 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import styles from './blackjack.module.css';
+import styles from './training.module.css';
 import { useAtoms } from '@/hooks/useAtoms';
+import { missionRegistry, TrainingWindowId, TrainingBlock } from '@/lib/mission-registry';
 
 // --- TYPES ---
-type VSMCard = { front: string; back: string; };
-type Skill = { name: string; description: string; };
-type BlockItem = {
-  id: string; title: string; theme: string;
-  skills: { physical: Skill; mental: Skill; };
-  cards: VSMCard[];
-};
-type WindowType = 'sprint' | 'standard' | 'grind';
-
-// --- DATA ---
-const blocks: Record<WindowType, { duration: number; items: BlockItem[] }> = {
-  sprint: {
-    duration: 10,
-    items: [
-      {
-        id: 'control-001',
-        title: 'Control the Deck, Release the Draft',
-        theme: 'Hands + Brain Sync',
-        skills: {
-          physical: { name: 'Overhand Shuffle Control', description: 'Keep top card intact.' },
-          mental: { name: 'Ugly First Draft (TUFD)', description: 'Embrace imperfect output.' }
-        },
-        cards: [
-          { front: 'Scenario: Describe this room as a crime scene.', back: 'Action: Shuffle 3x. Write 3 min.' },
-          { front: 'Scenario: Describe it as a sanctuary.', back: 'Action: Palm card. Write 3 min.' },
-          { front: 'Scenario: Combine both perspectives.', back: 'Action: Riffle shuffle. Synthesize.' }
-        ]
-      }
-    ]
-  },
-  standard: {
-    duration: 25,
-    items: [
-      {
-        id: 'interlock-002',
-        title: 'The Interlock: Plan Before You Ink',
-        theme: 'Structure + Clarity',
-        skills: {
-          physical: { name: 'Riffle Shuffle', description: 'Perfect distribution.' },
-          mental: { name: 'Outlining', description: 'Structure before flesh.' }
-        },
-        cards: [
-          { front: 'Scenario: Explain Drop Frame to a novice.', back: 'Action: Write headers only.' },
-          { front: 'Scenario: Single most important thing?', back: 'Action: Thesis statement.' },
-          { front: 'Scenario: How to teach this?', back: 'Action: Numbered steps 1-5.' }
-        ]
-      }
-    ]
-  },
-  grind: {
-    duration: 45,
-    items: [
-      {
-        id: 'hidden-003',
-        title: 'The Hidden Move',
-        theme: 'Subtlety',
-        skills: {
-          physical: { name: 'The Glide', description: 'Invisible control.' },
-          mental: { name: 'You-Focused Writing', description: 'Hide the ego.' }
-        },
-        cards: [
-          { front: 'Scenario: Selling to a skeptical prospect.', back: 'Action: Rewrite from THEIR perspective.' },
-          { front: 'Scenario: 5 Value Props.', back: 'Action: Deal bottom card. Replace "We" with "You".' },
-          { front: 'Scenario: Pick the strongest.', back: 'Action: Circle it. Copy the pattern.' }
-        ]
-      }
-    ]
-  }
-};
-
 type View = 'timeWindow' | 'block' | 'page' | 'completion';
+type BlockItem = TrainingBlock;
 
 export default function VSMTrainer() {
+  const windows = missionRegistry.trainingWindows;
+  const windowMap = useMemo(() => {
+    return windows.reduce<Record<TrainingWindowId, { duration: number; items: TrainingBlock[] }>>((acc, win) => {
+      acc[win.id] = { duration: win.durationMinutes, items: win.blocks };
+      return acc;
+    }, {} as Record<TrainingWindowId, { duration: number; items: TrainingBlock[] }>);
+  }, [windows]);
+
   const [view, setView] = useState<View>('timeWindow');
-  const [currentWindow, setCurrentWindow] = useState<WindowType | null>(null);
-  const [currentBlock, setCurrentBlock] = useState<BlockItem | null>(null);
+  const [currentWindow, setCurrentWindow] = useState<TrainingWindowId | null>(null);
+  const [currentBlock, setCurrentBlock] = useState<TrainingBlock | null>(null);
   const { atoms, refresh } = useAtoms('vsm_session');
 
   // Session State
@@ -106,9 +46,9 @@ export default function VSMTrainer() {
     return () => clearInterval(interval);
   }, [isActive, timeRemaining]);
 
-  const selectTimeWindow = (window: WindowType) => {
+  const selectTimeWindow = (window: TrainingWindowId) => {
     setCurrentWindow(window);
-    setTimeRemaining(blocks[window].duration * 60);
+    setTimeRemaining((windowMap[window]?.duration ?? 0) * 60);
     setView('block');
   };
 
@@ -143,13 +83,18 @@ export default function VSMTrainer() {
     if (!currentBlock || !currentWindow) return;
     setIsShipping(true);
 
+    const activeCard = currentBlock.cards[currentCardIndex] ?? null;
     const logEntry = {
+      trackId: currentWindow,
+      cardId: `${currentBlock.id}-${currentCardIndex + 1}`,
+      outputSummary: activeCard?.back ?? 'Session completed',
       block_id: currentBlock.id,
       block_title: currentBlock.title,
       window_type: currentWindow,
       cards_completed: currentCardIndex + 1,
       duration_seconds: sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      card_snapshot: activeCard
     };
 
     try {
@@ -187,13 +132,13 @@ export default function VSMTrainer() {
         <div className={styles.selectionView}>
           <h1>Choose Your Intensity</h1>
           <div className={styles.windowGrid}>
-            {(Object.keys(blocks) as WindowType[]).map((key) => (
+            {(Object.keys(windowMap) as TrainingWindowId[]).map((key) => (
               <div key={key}
                 className={`${styles.windowCard} ${currentWindow === key ? styles.selected : ''}`}
                 onClick={() => selectTimeWindow(key)}
               >
                 <h3>{key.toUpperCase()}</h3>
-                <div className={styles.duration}>{blocks[key].duration} min</div>
+                <div className={styles.duration}>{windowMap[key]?.duration ?? 0} min</div>
               </div>
             ))}
           </div>
@@ -204,7 +149,7 @@ export default function VSMTrainer() {
         <div className={styles.blockView}>
           <h2>Select Drill Protocol</h2>
           <div id="blocksContainer">
-            {blocks[currentWindow].items.map((block) => (
+            {windowMap[currentWindow]?.items.map((block) => (
               <div key={block.id}
                 className={`${styles.blockDescription} ${currentBlock?.id === block.id ? styles.selected : ''}`}
                 onClick={() => selectBlock(block)}

@@ -22,6 +22,7 @@ export function Sidebar() {
         <NavLink href="/genesis" label="Genesis Curriculum" icon="📚" />
         <NavLink href="/editor" label="Ritual Workbook" icon="📝" />
         <NavLink href="/training" label="VSM Trainer" icon="🃏" />
+        <NavLink href="/mission" label="Mission Surface" icon="🛰️" />
       </nav>
 
       {/* Footer Status */}

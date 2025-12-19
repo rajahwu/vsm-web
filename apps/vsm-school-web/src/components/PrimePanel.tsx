@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress"; // shadcn
 
-interface CardRitualProps {
+interface PrimePanelProps {
   card: {
     id: string;
     title: string;
@@ -13,10 +13,10 @@ interface CardRitualProps {
       prompt: string;
     };
   };
-  onDojoComplete: () => void;
+  onComplete: () => void;
 }
 
-export const CardRitual: React.FC<CardRitualProps> = ({ card, onDojoComplete }) => {
+export const PrimePanel: React.FC<PrimePanelProps> = ({ card, onComplete }) => {
   const [subPhase, setSubPhase] = useState<"instruction" | "active">("instruction");
   const [timeLeft, setTimeLeft] = useState(card.drill.seconds);
 
@@ -26,10 +26,10 @@ export const CardRitual: React.FC<CardRitualProps> = ({ card, onDojoComplete }) 
     if (subPhase === "active" && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     } else if (timeLeft === 0) {
-      onDojoComplete(); // Auto-advance to Forge
+      onComplete(); // Auto-advance to Forge
     }
     return () => clearInterval(timer);
-  }, [subPhase, timeLeft, onDojoComplete]);
+  }, [subPhase, timeLeft, onComplete]);
 
   return (
     <div className="flex flex-col h-screen justify-center items-center p-6 text-center bg-zinc-950">
@@ -37,7 +37,7 @@ export const CardRitual: React.FC<CardRitualProps> = ({ card, onDojoComplete }) 
         <div className="space-y-6">
           <header className="space-y-2">
             <h1 className="text-4xl font-black uppercase italic text-emerald-500">
-              DOJO: {card.title}
+              PRIME: {card.title}
             </h1>
             <p className="text-muted-foreground uppercase tracking-widest text-sm">
               Medium: {card.drill.medium}
