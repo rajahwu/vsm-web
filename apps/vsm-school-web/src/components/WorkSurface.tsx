@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Archive, FileText } from "lucide-react";
 
 /* =========================
    Props
@@ -29,52 +30,90 @@ export const WorkSurface: React.FC<WorkSurfaceProps> = ({
   const [content, setContent] = useState('');
   const [isShipping, setIsShipping] = useState(false);
 
+  // Auto-save to localStorage as draft
+  useEffect(() => {
+    const draftKey = `draft_${card.id}`;
+    const savedDraft = localStorage.getItem(draftKey);
+    if (savedDraft) {
+      setContent(savedDraft);
+    }
+
+    return () => {
+      if (content.trim()) {
+        localStorage.setItem(draftKey, content);
+      }
+    };
+  }, [card.id, content]);
+
   async function handleShip() {
     if (!content.trim()) return;
 
     try {
       setIsShipping(true);
       await onShip(content);
+      // Clear draft after successful ship
+      localStorage.removeItem(`draft_${card.id}`);
     } finally {
       setIsShipping(false);
     }
   }
 
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+  const charCount = content.length;
+
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground p-4">
-      {/* Sticky Hint Bar */}
-      <header className="border-b pb-4 mb-4">
-        <div className="flex justify-between items-center text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          <span>{card.title}</span>
+    <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
+      {/* Sticky Header */}
+      <header className="border-b border-zinc-800 px-6 py-4 bg-zinc-900/50">
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2 text-teal-500">
+            <FileText size={20} />
+            <span className="text-xs uppercase tracking-widest font-bold">
+              Work Surface
+            </span>
+          </div>
+          <div className="text-xs text-zinc-500 uppercase tracking-wider">
+            {card.title}
+          </div>
         </div>
-        <h2 className="text-sm font-bold text-emerald-400">
-          HINT: {card.drill.prompt}
-        </h2>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-emerald-400 font-semibold">
+            Prompt: {card.drill.prompt}
+          </p>
+          <div className="text-xs text-zinc-600 space-x-4">
+            <span>{wordCount} words</span>
+            <span>{charCount} chars</span>
+          </div>
+        </div>
       </header>
 
       {/* The Workspace */}
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col p-6">
         {card.forgePrompt && (
-          <p className="text-sm italic text-muted-foreground">
-            {card.forgePrompt}
-          </p>
+          <div className="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded-lg">
+            <p className="text-sm text-zinc-300 leading-relaxed">
+              {card.forgePrompt}
+            </p>
+          </div>
         )}
 
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Begin the poetry..."
-          className="flex-1 resize-none bg-zinc-900 border-zinc-800 focus:ring-emerald-500 text-lg leading-relaxed"
+          placeholder="Begin writing..."
+          className="flex-1 resize-none bg-zinc-900 border-zinc-800 focus:ring-teal-500 focus:border-teal-500 text-lg leading-relaxed p-6 font-mono"
+          autoFocus
         />
       </div>
 
       {/* Archive Action */}
-      <footer className="mt-4 pt-4 border-t">
+      <footer className="border-t border-zinc-800 px-6 py-4 bg-zinc-900/50">
         <Button
           onClick={handleShip}
           disabled={!content.trim() || isShipping}
-          className="w-full py-6 text-lg bg-emerald-600 hover:bg-emerald-500 font-bold uppercase tracking-tighter"
+          className="w-full py-6 text-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-800 disabled:text-zinc-600 font-bold uppercase tracking-tighter flex items-center justify-center gap-2"
         >
+          <Archive size={20} />
           {isShipping ? 'ARCHIVING…' : 'ARCHIVE OUTPUT'}
         </Button>
       </footer>

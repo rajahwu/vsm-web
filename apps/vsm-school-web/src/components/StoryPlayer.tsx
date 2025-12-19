@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 /* =========================
    Types (UI-only)
@@ -140,12 +140,12 @@ export function StoryPlayer({
     return () => clearInterval(interval);
   }, [node.id]);
 
-  const skipTyping = () => {
+  const skipTyping = useCallback(() => {
     if (!isTyping) return;
     setDisplayedText(node.text);
     setIsTyping(false);
     setTimeout(() => setShowChoices(true), 100);
-  };
+  }, [isTyping, node.text]);
 
   const speakerColor = speakerColors[node.speaker] || '#888';
   const speakerName =

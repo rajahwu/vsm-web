@@ -20,7 +20,7 @@ export function Sidebar() {
         <NavLink href="/tracker" label="Cycle Tracker" icon="⚡" />
         <NavLink href="/blackout" label="Blackout Protocol" icon="⚫" />
         <NavLink href="/genesis" label="Genesis Curriculum" icon="📚" />
-        <NavLink href="/editor" label="Ritual Workbook" icon="📝" />
+        <NavLink href="/workbook" label="Workbook Station" icon="📝" />
         <NavLink href="/training" label="VSM Trainer" icon="🃏" />
         <NavLink href="/mission" label="Mission Surface" icon="🛰️" />
       </nav>

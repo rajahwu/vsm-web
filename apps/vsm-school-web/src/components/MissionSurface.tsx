@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 import { CodexViewer } from './CodexViewer';
+import { StorySession } from './StorySession';
 import { PrimePanel } from './PrimePanel';
 import { WorkSurface } from './WorkSurface';
 import { MissionSuccess } from './MissionSuccess';
@@ -18,6 +19,8 @@ import {
   MISSION_REGISTRY as MISSION_TRACKS,
   CARD_REGISTRY as MISSION_CARDS,
 } from '@/lib/registry';
+
+import { getTransmissionNode } from '@/lib/registry/story';
 
 /* =========================
    Mission State
@@ -97,22 +100,69 @@ export const MissionSurface: React.FC = () => {
   // No card yet → Track selection is the entry point
   if (!selectedCard || !currentPhase) {
     return (
-      <div className="p-6">
-        <h2 className="text-lg font-bold mb-4">Select Track</h2>
-        {Object.values(MISSION_TRACKS)
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map(track => (
-            <button
-              key={track.id}
-              className="block w-full text-left p-3 mb-2 border rounded"
-              onClick={() => startTrack(track.id)}
-            >
-              <div className="font-semibold">{track.title}</div>
-              <div className="text-sm text-muted-foreground">
-                {track.description}
-              </div>
-            </button>
-          ))}
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
+        {/* Header */}
+        <header className="border-b border-zinc-800 px-6 py-8">
+          <h1 className="text-3xl font-black uppercase tracking-tight text-teal-500">
+            Select Mission Track
+          </h1>
+          <p className="text-sm text-zinc-500 mt-2 uppercase tracking-wider">
+            Choose your path to visual systems mastery
+          </p>
+        </header>
+
+        {/* Track Cards */}
+        <div className="flex-1 p-6 max-w-4xl mx-auto w-full">
+          <div className="grid gap-4 md:grid-cols-1">
+            {Object.values(MISSION_TRACKS)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map(track => (
+                <button
+                  key={track.id}
+                  className="group text-left p-6 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-teal-600 hover:bg-zinc-900/80 transition-all duration-200"
+                  onClick={() => startTrack(track.id)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-teal-400 transition-colors">
+                        {track.title}
+                      </h3>
+                      <p className="text-sm text-zinc-400 mb-4">
+                        {track.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-zinc-600 uppercase tracking-wider">
+                        <span>{track.cards.length} Cards</span>
+                        <span>•</span>
+                        <span>Track {(track.order ?? 0) + 1}</span>
+                      </div>
+                    </div>
+                    <div className="text-teal-600 group-hover:text-teal-400 transition-colors">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+              ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="border-t border-zinc-800 px-6 py-4">
+          <p className="text-xs text-zinc-600 text-center uppercase tracking-wider">
+            Complete tracks sequentially for optimal mastery
+          </p>
+        </footer>
       </div>
     );
   }
@@ -122,9 +172,8 @@ export const MissionSurface: React.FC = () => {
      ========================= */
 
   switch (currentPhase) {
-    /* -------- CODEX / INSTRUCTION -------- */
-    case 'codex':
-    case 'instruction': {
+    /* -------- CODEX (Reference Material) -------- */
+    case 'codex': {
       const slug = selectedCard.lessonRef?.slug;
 
       return (
@@ -132,6 +181,38 @@ export const MissionSurface: React.FC = () => {
           slug={slug}
           onContinue={advancePhase}
           onSkip={advancePhase}
+        />
+      );
+    }
+
+    /* -------- INSTRUCTION (Story Transmission) -------- */
+    case 'instruction': {
+      const slug = selectedCard.lessonRef?.slug;
+      if (!slug) {
+        // No transmission, skip to prime
+        advancePhase();
+        return null;
+      }
+
+      const node = getTransmissionNode(slug);
+      if (!node) {
+        // Transmission not found, skip to prime
+        advancePhase();
+        return null;
+      }
+
+      return (
+        <StorySession
+          startNodeId={node.id}
+          storyNodes={[node]}
+          onTriggerTraining={(cardId) => {
+            // Card triggered from story, advance to prime phase
+            advancePhase();
+          }}
+          onComplete={() => {
+            // Story complete, advance to prime
+            advancePhase();
+          }}
         />
       );
     }

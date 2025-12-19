@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress"; // shadcn
+import { SkipForward } from "lucide-react";
 
 interface PrimePanelProps {
   card: {
@@ -20,16 +20,26 @@ export const PrimePanel: React.FC<PrimePanelProps> = ({ card, onComplete }) => {
   const [subPhase, setSubPhase] = useState<"instruction" | "active">("instruction");
   const [timeLeft, setTimeLeft] = useState(card.drill.seconds);
 
-  // Dojo Timer Logic
+  const handleComplete = useCallback(() => {
+    onComplete();
+  }, [onComplete]);
+
+  // Timer Logic
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (subPhase === "active" && timeLeft > 0) {
-      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft === 0) {
-      onComplete(); // Auto-advance to Forge
-    }
+    if (subPhase !== "active" || timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          handleComplete();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
     return () => clearInterval(timer);
-  }, [subPhase, timeLeft, onComplete]);
+  }, [subPhase, timeLeft, handleComplete]);
 
   return (
     <div className="flex flex-col h-screen justify-center items-center p-6 text-center bg-zinc-950">
@@ -58,8 +68,8 @@ export const PrimePanel: React.FC<PrimePanelProps> = ({ card, onComplete }) => {
           </Button>
         </div>
       ) : (
-        <div className="space-y-12 w-full max-w-xs">
-          {/* Active Dojo Timer */}
+        <div className="space-y-12 w-full max-w-md">
+          {/* Active Timer */}
           <div className="relative flex items-center justify-center">
             <div className="text-8xl font-black font-mono text-white">
               {timeLeft}
@@ -87,9 +97,19 @@ export const PrimePanel: React.FC<PrimePanelProps> = ({ card, onComplete }) => {
               />
             </svg>
           </div>
-          <p className="text-emerald-400 font-bold animate-pulse uppercase tracking-tighter">
-            Execute: {card.drill.prompt}
-          </p>
+          <div className="space-y-4">
+            <p className="text-emerald-400 font-bold animate-pulse uppercase tracking-tighter text-center">
+              Execute: {card.drill.prompt}
+            </p>
+            <Button
+              onClick={handleComplete}
+              variant="ghost"
+              className="w-full text-zinc-500 hover:text-zinc-300"
+            >
+              <SkipForward size={16} className="mr-2" />
+              Finished Early - Continue
+            </Button>
+          </div>
         </div>
       )}
     </div>

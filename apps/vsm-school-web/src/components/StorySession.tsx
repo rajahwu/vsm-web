@@ -63,19 +63,24 @@ export function StorySession({
     initialEntities
   );
 
-  const node: StoryNode = storyNodes.find(n => n.id === startNodeId) || storyNodes[0];
+  // Fix: Find node based on current nodeId state, not startNodeId
+  const node: StoryNode = storyNodes.find(n => n.id === nodeId) || storyNodes[0];
 
-  const choiceIds = node.choices?.map(c => c.id) || [];
   function handleChoose(choiceId: string) {
-    const result = advanceNode({storyNodes: storyNodes, currentNode: node, choiceId: choiceId || node.choices[0].id});
+    const result = advanceNode({
+      storyNodes: storyNodes,
+      currentNode: node,
+      choiceId: choiceId
+    });
+
     if (!result) return;
 
-    // // Apply entity state changes
-    // if (result.statusUpdates) {
-    //   setEntities(prev =>
-    //     applyStatusUpdates(prev, result.statusUpdates!)
-    //   );
-    // }
+    // Apply entity state changes
+    if (result.statusUpdates) {
+      setEntities(prev =>
+        applyStatusUpdates(prev, result.statusUpdates!)
+      );
+    }
 
     // 🚨 HANDOFF: story → training
     if (result.triggersCardId) {
@@ -83,11 +88,13 @@ export function StorySession({
       return;
     }
 
-    // // Ending reached
-    // if (storyNodes[result.nextNodeId]?.isEnding) {
-    //   setNodeId(result.nextNodeId);
-    //   return;
-    // }
+    // Ending reached
+    const nextNode = storyNodes.find(n => n.id === result.nextNodeId);
+    if (nextNode?.isEnding && onComplete) {
+      setNodeId(result.nextNodeId);
+      onComplete();
+      return;
+    }
 
     // Normal progression
     setNodeId(result.nextNodeId);

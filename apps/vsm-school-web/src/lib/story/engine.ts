@@ -1,8 +1,8 @@
-import type { StoryChoice, StoryNode } from './story-map';
+import type { StoryNode, EntityId, Entity } from './story-map';
 
 type AdvanceNodeResult = {
   nextNodeId: string;
-  statusUpdates?: { status: string; integrityChange: number };
+  statusUpdates?: Partial<Record<EntityId, Partial<Entity>>>;
   triggersCardId?: string;
 }
 
@@ -17,11 +17,13 @@ export function advanceNode(
 ): AdvanceNodeResult | null {
   const choice = currentNode.choices?.find(c => c.id === choiceId);
   if (!choice) return null;
-  currentNode ? storyNodes.find(c => choice.nextNodeId === c.id) : currentNode;
-  ;
+
+  const nextNode = storyNodes.find(n => n.id === choice.nextNodeId);
+  if (!nextNode) return null;
+
   return {
     nextNodeId: choice.nextNodeId,
-    statusUpdates: currentNode.statusUpdates,
-    triggersCardId: undefined, // future hook
+    statusUpdates: nextNode.statusUpdates,
+    triggersCardId: nextNode.triggersCardId, // Card triggering now implemented
   };
 }

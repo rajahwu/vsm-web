@@ -51,17 +51,29 @@ export const MissionSuccess: React.FC<MissionSuccessProps> = ({
       </div>
 
       {/* Next Mission Call-to-Action */}
-      {nextCardTitle && (
-        <div className="space-y-4 w-full max-w-xs">
-          <p className="text-xs text-zinc-400 uppercase tracking-widest">Next Mission Unlocked</p>
-          <Button 
-            onClick={onContinue}
-            className="w-full py-8 text-lg bg-white text-black hover:bg-emerald-500 font-bold flex gap-2"
-          >
-            START: {nextCardTitle} <ArrowRight size={20} />
-          </Button>
-        </div>
-      )}
+      <div className="space-y-4 w-full max-w-xs">
+        {nextCardTitle ? (
+          <>
+            <p className="text-xs text-zinc-400 uppercase tracking-widest">Next Mission Unlocked</p>
+            <Button
+              onClick={onContinue}
+              className="w-full py-8 text-lg bg-white text-black hover:bg-emerald-500 font-bold flex gap-2"
+            >
+              START: {nextCardTitle} <ArrowRight size={20} />
+            </Button>
+          </>
+        ) : (
+          <>
+            <p className="text-xs text-zinc-400 uppercase tracking-widest">Mission Complete</p>
+            <Button
+              onClick={onContinue}
+              className="w-full py-8 text-lg bg-white text-black hover:bg-emerald-500 font-bold flex gap-2"
+            >
+              Return to Mission Select <ArrowRight size={20} />
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 };

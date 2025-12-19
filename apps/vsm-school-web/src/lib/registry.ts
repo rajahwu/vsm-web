@@ -59,7 +59,7 @@ export const MISSION_REGISTRY: Record<MissionTrackId, MissionTrack> = {
         id: "powerhouse",
         title: "The Powerhouse",
         description: "Creative Dexterity & Strategy",
-        cards: ["high_ground", "interlock", "hidden_move"],
+        cards: ["dexterity", "high_ground", "interlock", "hidden_move"],
         order: 3
     }
 }
@@ -205,12 +205,13 @@ export const CARD_REGISTRY: Record<MissionCardId, MissionCard> = {
         trackId: "powerhouse",
         title: "Dexterity",
         lessonRef: { kind: "blackout", slug: "transmission-dexterity" },
-        phases: ["codex", "instruction", "prime"],
+        phases: ["codex", "instruction", "prime", "produce"],
         drill: {
             seconds: 120,
             medium: "physical",
             prompt: "Execute slow, controlled hand movements. No speed. No flourish."
-        }
+        },
+        forgePrompt: "Describe a specific moment when physical precision prevented failure. What instrument did you control? What was at stake?"
     }
 
 }
