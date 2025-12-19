@@ -115,7 +115,7 @@ Located in `VSM Schools Landing Page/` subdirectory, this appears to be a public
 VSM Training System/
 ├── vsm-training-dojo.md           # Specification document
 ├── README.md                      # This file
-├── TODO.md                        # Task backlog
+├── (TODO moved to RDX/TODO.md)    # Task backlog index
 ├── exported-assets/
 │   └── index.html                 # Exported static version (if exists)
 └── VSM Schools Landing Page/      # Separate React app

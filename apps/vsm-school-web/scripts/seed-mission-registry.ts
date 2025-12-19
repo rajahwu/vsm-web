@@ -53,9 +53,13 @@ async function seedTraining() {
         back_text: card.back,
       }));
 
-      const { error: cardErr } = await supabase.from('training_cards').upsert(cards, {
-        onConflict: 'block_id,card_order'
-      });
+      const { error: deleteErr } = await supabase
+        .from('training_cards')
+        .delete()
+        .eq('block_id', blockRow.id);
+      if (deleteErr) throw deleteErr;
+
+      const { error: cardErr } = await supabase.from('training_cards').insert(cards);
       if (cardErr) throw cardErr;
     }
   }

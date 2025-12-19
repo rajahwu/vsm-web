@@ -35,10 +35,10 @@ Five canonical terms that are:
 
 | File | Lines Changed | Type | Impact |
 |------|---------------|------|--------|
-| `apps/vsm-school-web/TODO.md` | 47 changes | Documentation | HIGH |
+| `RDX/TODO.md` | 47 changes | Documentation | HIGH |
 | `.github/copilot-instructions.md` | 15 changes | Documentation | HIGH |
 | `README.md` | 300 lines | Documentation | HIGH (new file) |
-| `RDX/2025-12-18_2230_naming-refactor-report.md` | 600+ lines | Documentation | MEDIUM (this file) |
+| `RDX/reports/2025-12-18_2230_github-copilot_refactor_naming-canonical-system.md` | 600+ lines | Documentation | MEDIUM (this file) |
 
 **Total:** 4 files, 962+ lines changed/created
 
@@ -789,15 +789,15 @@ Create `naming-decisions.md` to document future naming choices:
 ### Source Documents
 
 1. [naming-canonical-lock.md](../apps/vsm-school-web/naming-canonical-lock.md) - Authoritative naming spec
-2. [TODO.md](../apps/vsm-school-web/TODO.md) - Updated task list
+2. [TODO.md](../RDX/TODO.md) - Updated task list
 3. [copilot-instructions.md](../.github/copilot-instructions.md) - AI agent guidance
 4. [README.md](../README.md) - Project overview
 5. [vsm-training-dojo.md](../docs/specs/vsm-training-dojo.md) - Training interface spec
 
 ### Related Reports
 
-- [2025-12-18_2100_agent-mission-completion-report.md](./2025-12-18_2100_agent-mission-completion-report.md) - Previous mission completion
-- [2025-12-18_audit-vsm-school-web.md](./2025-12-18_audit-vsm-school-web.md) - App audit
+- [2025-12-18_2100_github-copilot_completion_agent-mission.md](./2025-12-18_2100_github-copilot_completion_agent-mission.md) - Previous mission completion
+- [2025-12-18_1615_github-copilot_audit_vsm-school-web.md](./2025-12-18_1615_github-copilot_audit_vsm-school-web.md) - App audit
 - [2025-12-18_migration-plan-components-data.md](./2025-12-18_migration-plan-components-data.md) - Migration strategy
 
 ---

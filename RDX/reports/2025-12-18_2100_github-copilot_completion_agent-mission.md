@@ -118,7 +118,7 @@ packages/
 ### 3. Existing RDX Reports
 
 #### A. VSM School Web Audit (2025-12-18)
-**Location:** `RDX/2025-12-18_audit-vsm-school-web.md`
+**Location:** `RDX/reports/2025-12-18_1615_github-copilot_audit_vsm-school-web.md`
 
 **Completion Grade:** 83% (B+)
 
@@ -153,7 +153,7 @@ packages/
 ---
 
 #### B. Migration Plan - Components & Data (2025-12-18)
-**Location:** `RDX/2025-12-18_migration-plan-components-data.md`
+**Location:** `RDX/plans/2025-12-18_migration-plan-components-data.md`
 
 **8-Week Strategy:**
 - **Week 1-2:** Database schema + seed scripts
@@ -176,7 +176,7 @@ packages/
 ---
 
 #### C. Mission Surface Audit (2025-12-18 17:10)
-**Location:** `RDX/2025-12-18_1710_GitHub-Copilot_mission-surface-audit.md`
+**Location:** `RDX/reports/2025-12-18_1710_github-copilot_audit_mission-surface.md`
 
 **Alignment with Checklist:**
 - ✅ Phase 1: Registry (completed - mission-registry.ts created)
@@ -317,7 +317,7 @@ interface ForgeEditorProps {
 
 ## 📋 TODO.md Created
 
-**Location:** `apps/vsm-school-web/TODO.md`
+**Location:** `RDX/TODO.md`
 
 **Structure:**
 - **18 total tasks** organized by priority (P0, P1, P2, P3)
@@ -576,8 +576,8 @@ This creates a **narrative wrapper** for training, making drills feel like missi
 - RDX audit reports: ~1,849 lines (3 files)
 
 **Files Created:** 2 new documents
-- apps/vsm-school-web/TODO.md: 650 lines, 18 tasks
-- RDX/2025-12-18_2100_agent-mission-completion-report.md: This file
+- RDX/TODO.md: 650 lines, 18 tasks
+- RDX/reports/2025-12-18_2100_github-copilot_completion_agent-mission.md: This file
 
 **Codebase Statistics:**
 - 6 routes (1 placeholder, 1 stub, 4 complete)
@@ -686,11 +686,10 @@ The VSM School Web app is **83% complete** with a clear path to 100%. The Missio
 ## 🔗 Related Documents
 
 - [agent-mission.md](../apps/vsm-school-web/agent-mission.md) - Original mission brief
-- [TODO.md](../apps/vsm-school-web/TODO.md) - 18 prioritized tasks created
+- [TODO.md](../RDX/TODO.md) - 18 prioritized tasks created
 - [vsm-web-review-migration.md](../apps/vsm-school-web/vsm-web-review-migration.md) - Mobile architecture vision
 - [vsm-school-merger-component-data-migration-plan.md](../apps/vsm-school-web/vsm-school-merger-component-data-migration-plan.md) - Database schema
 - [mission-surface-migration-checklist.md](../apps/vsm-school-web/mission-surface-migration-checklist.md) - Implementation checklist
-- [RDX/2025-12-18_audit-vsm-school-web.md](./2025-12-18_audit-vsm-school-web.md) - App audit (83% grade)
-- [RDX/2025-12-18_migration-plan-components-data.md](./2025-12-18_migration-plan-components-data.md) - 8-week plan
-- [RDX/2025-12-18_1710_GitHub-Copilot_mission-surface-audit.md](./2025-12-18_1710_GitHub-Copilot_mission-surface-audit.md) - Alignment audit
-
+- [RDX/reports/2025-12-18_1615_github-copilot_audit_vsm-school-web.md](./2025-12-18_1615_github-copilot_audit_vsm-school-web.md) - App audit (83% grade)
+- [RDX/plans/2025-12-18_migration-plan-components-data.md](../plans/2025-12-18_migration-plan-components-data.md) - 8-week plan
+- [RDX/reports/2025-12-18_1710_github-copilot_audit_mission-surface.md](./2025-12-18_1710_github-copilot_audit_mission-surface.md) - Alignment audit

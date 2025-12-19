@@ -413,7 +413,7 @@ generation.prompts.generateAssetsForBrand(info, prompts)
 
 ## External Integration Points
 
-### Planned Integrations (from `docs/specs/TODO.md`)
+### Planned Integrations (from `RDX/TODO.md`)
 
 1. **Supabase** - Backend services
    - Authentication
@@ -531,7 +531,7 @@ generation.prompts.generateAssetsForBrand(info, prompts)
 ### Existing Documentation
 
 - ✅ `docs/specs/README.md` - Feature overview and tech stack
-- ✅ `docs/specs/TODO.md` - Task backlog (208 lines)
+- ✅ `RDX/TODO.md` - Task backlog (208 lines)
 - ✅ `docs/specs/vsm-training-dojo.md` - Training flow specification
 - ✅ `.github/copilot-instructions.md` - AI agent guidance (generated)
 - ✅ `apps/vsm-school-web/agent-mission.md` - Mission brief marker

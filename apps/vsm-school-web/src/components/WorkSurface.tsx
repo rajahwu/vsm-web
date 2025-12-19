@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Archive, FileText } from "lucide-react";
+import React, { useState, useEffect, useMemo } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { MarkdownRenderer } from './MarkdownRenderer';
+import { Archive, FileText, Eye, PencilLine } from 'lucide-react';
 
 /* =========================
    Props
@@ -17,7 +19,11 @@ interface WorkSurfaceProps {
     forgePrompt?: string;
   };
   onShip: (output: string) => Promise<void>;
+  onCancel?: () => void;
+  initialContent?: string;
 }
+
+const AUTOSAVE_INTERVAL_MS = 30000;
 
 /* =========================
    WorkSurface
@@ -26,24 +32,58 @@ interface WorkSurfaceProps {
 export const WorkSurface: React.FC<WorkSurfaceProps> = ({
   card,
   onShip,
+  onCancel,
+  initialContent,
 }) => {
+  const draftKey = useMemo(() => `draft_${card.id}`, [card.id]);
+
   const [content, setContent] = useState('');
   const [isShipping, setIsShipping] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
-  // Auto-save to localStorage as draft
+  // Load draft on mount
   useEffect(() => {
-    const draftKey = `draft_${card.id}`;
     const savedDraft = localStorage.getItem(draftKey);
     if (savedDraft) {
       setContent(savedDraft);
+      return;
     }
 
-    return () => {
+    if (initialContent) {
+      setContent(initialContent);
+    }
+  }, [draftKey, initialContent]);
+
+  // Periodic autosave
+  useEffect(() => {
+    const interval = setInterval(() => {
       if (content.trim()) {
         localStorage.setItem(draftKey, content);
       }
-    };
-  }, [card.id, content]);
+    }, AUTOSAVE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [content, draftKey]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      const isCmdOrCtrl = event.metaKey || event.ctrlKey;
+
+      if (isCmdOrCtrl && event.key.toLowerCase() === 'enter') {
+        event.preventDefault();
+        handleShip();
+      }
+
+      if (isCmdOrCtrl && event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        setShowPreview(prev => !prev);
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
 
   async function handleShip() {
     if (!content.trim()) return;
@@ -51,8 +91,7 @@ export const WorkSurface: React.FC<WorkSurfaceProps> = ({
     try {
       setIsShipping(true);
       await onShip(content);
-      // Clear draft after successful ship
-      localStorage.removeItem(`draft_${card.id}`);
+      localStorage.removeItem(draftKey);
     } finally {
       setIsShipping(false);
     }
@@ -87,23 +126,69 @@ export const WorkSurface: React.FC<WorkSurfaceProps> = ({
         </div>
       </header>
 
-      {/* The Workspace */}
-      <div className="flex-1 flex flex-col p-6">
-        {card.forgePrompt && (
-          <div className="mb-4 p-4 bg-zinc-900 border border-zinc-800 rounded-lg">
-            <p className="text-sm text-zinc-300 leading-relaxed">
-              {card.forgePrompt}
-            </p>
-          </div>
-        )}
+      {/* Sticky Context Card */}
+      <div className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur px-6 py-3">
+        <div className="max-w-4xl mx-auto text-sm text-zinc-300">
+          <span className="text-zinc-500 uppercase tracking-widest text-xs mr-2">
+            Context
+          </span>
+          {card.forgePrompt || card.drill.prompt}
+        </div>
+      </div>
 
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Begin writing..."
-          className="flex-1 resize-none bg-zinc-900 border-zinc-800 focus:ring-teal-500 focus:border-teal-500 text-lg leading-relaxed p-6 font-mono"
-          autoFocus
-        />
+      {/* Workspace */}
+      <div className="flex-1 flex flex-col p-6 gap-4">
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-zinc-500 uppercase tracking-widest">
+            {showPreview ? 'Preview' : 'Editor'}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              className="text-zinc-500 hover:text-zinc-200"
+              onClick={() => setShowPreview(prev => !prev)}
+            >
+              {showPreview ? (
+                <>
+                  <PencilLine size={16} className="mr-2" />
+                  Edit
+                </>
+              ) : (
+                <>
+                  <Eye size={16} className="mr-2" />
+                  Preview
+                </>
+              )}
+            </Button>
+            {onCancel && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-zinc-500 hover:text-zinc-200"
+                onClick={onCancel}
+              >
+                Exit
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex-1 border border-zinc-800 rounded-lg bg-zinc-900">
+          {showPreview ? (
+            <div className="h-full overflow-y-auto p-6">
+              <MarkdownRenderer content={content || '_Nothing to preview yet._'} />
+            </div>
+          ) : (
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Begin writing..."
+              className="h-full resize-none bg-zinc-900 border-0 focus:ring-0 text-lg leading-relaxed p-6 font-mono"
+              autoFocus
+            />
+          )}
+        </div>
       </div>
 
       {/* Archive Action */}
@@ -114,7 +199,7 @@ export const WorkSurface: React.FC<WorkSurfaceProps> = ({
           className="w-full py-6 text-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-800 disabled:text-zinc-600 font-bold uppercase tracking-tighter flex items-center justify-center gap-2"
         >
           <Archive size={20} />
-          {isShipping ? 'ARCHIVING…' : 'ARCHIVE OUTPUT'}
+          {isShipping ? 'ARCHIVING...' : 'ARCHIVE OUTPUT'}
         </Button>
       </footer>
     </div>

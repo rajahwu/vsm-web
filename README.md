@@ -298,7 +298,7 @@ bun run scripts/seed-mission-registry.ts
 3. Implement WorkSurface component
 4. Refactor training page to use database
 
-**See:** `apps/vsm-school-web/TODO.md` for full task list.
+**See:** `RDX/TODO.md` for the full task list.
 
 ---
 
@@ -334,7 +334,7 @@ refactor: Extract CardRitual to package
 ## 📖 Documentation
 
 - [Naming Canonical Lock](apps/vsm-school-web/naming-canonical-lock.md) - Naming system enforcement
-- [TODO](apps/vsm-school-web/TODO.md) - Task tracking (18 tasks)
+- [TODO](RDX/TODO.md) - Task tracking (categorized)
 - [VSM Training Dojo](docs/specs/vsm-training-dojo.md) - Training interface spec
 - [Copilot Instructions](.github/copilot-instructions.md) - AI agent guidance
 - [RDX Reports](RDX/) - Audit and migration reports
