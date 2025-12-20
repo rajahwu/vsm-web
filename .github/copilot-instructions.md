@@ -37,218 +37,144 @@ Pulse → Codex → Track → Prime → Produce → Archive
 
 ## Architecture Overview
 
-This is a **pnpm workspace monorepo** with four main packages:
+This is a **pnpm workspace monorepo** with nested package structure:
 
 ```
 apps/vsm-school-web/              # Next.js 14 training app
-packages/rsys-os/design-source/   # Design tokens & brand assets (@rsys-os/design-source)
-packages/ritual/brand/            # Theme compiler (@gttm/ritual-brand)
-packages/ritual/ui-lib/           # React components (@gttm/ritual-ui)
+packages/
+  gttm/                          # GTTM-branded packages
+    mission/                      # Mission orchestration (@gttm/mission)
+    story/                        # Narrative/story system (@gttm/story)
+    codex/                        # Codex content (@gttm/codex)
+    components/                   # Shared UI primitives (@gttm/components)
+    brand/                        # GTTM brand tokens (@gttm/brand)
+  ritual/                         # Ritual-branded packages
+    brand/                        # Theme compiler (@ritual/brand)
+    ui-lib/                       # Themed components (@ritual/ui-lib)
+    components/                   # Ritual mechanics & UI (@ritual/components)
+    codex/                        # Ritual content (@ritual/codex)
+  rsys-os/                        # Cross-brand system packages
+    design-source/                # Design tokens & assets (@rsys-os/design-source)
+    data/                         # Data layer (@rsys-os/data)
+    style/                        # Multi-brand system (@rsys-os/style - planned)
+  vsm/                            # VSM-branded packages
+    brand/                        # VSM brand tokens (@vsm/brand)
 ```
 
-**Key Architecture Pattern**: The design system flows from JSON tokens → CSS variables → React components. The `@rsys-os/design-source` package contains JSON design tokens, `@gttm/ritual-brand` compiles them into CSS variables, which `@gttm/ritual-ui` consumes to build themed components.
+### Critical Data Flow (Training System)
 
-### Data Flow
+**🚨 CURRENT STATE (Active):**
 
-1. **Design Tokens** (`packages/rsys-os/design-source/tokens/`) are stored as JSON
-2. **Theme Compiler** (`packages/ritual/brand/src/RitualBrand.ts`) imports tokens and compiles to CSS variables
-3. **UI Components** (`packages/ritual/ui-lib/`) consume theme via CSS variables
-4. **Next.js App** (`apps/vsm-school-web/`) imports and renders `@gttm/ritual-ui` components
+The app has successfully migrated to Supabase for core training data.
+
+1. **Database (Active)**: Supabase tables `training_windows`, `training_blocks`, `training_cards`, `atoms`.
+   - Schema: [RDX/plans/supabase-schema.sql](RDX/plans/supabase-schema.sql)
+   - Data Layer: `@rsys-os/data` provides typed client and interfaces.
+   - Hooks: `apps/vsm-school-web/src/hooks/useTrainingData.ts` (`useTrainingWindows`, `useTrainingBlocks`, `useTrainingCards`)
+   - Progress: `useMissionProgress` hook in `@gttm/mission` tracks completed cards.
+
+2. **Legacy (Preserved)**: Hardcoded `missionRegistry` moved to `@gttm/mission/src/lib/legacy-registry.ts`.
+   - Used for seeding and fallback reference.
+
+**Data Flow Diagram:**
+```
+[Supabase] ──(@rsys-os/data)──> [useTrainingData Hooks] ──> [training/page.tsx] ──> [UI]
+```
+
+**Pattern**: Use `@rsys-os/data` for all Supabase interactions to maintain type safety.
+
+### Design Token Flow
+
+1. **Design Tokens** (`packages/rsys-os/design-source/tokens/`) stored as JSON
+2. **Theme Compiler** (`packages/ritual/brand/src/RitualBrand.ts`) imports tokens → CSS variables
+3. **UI Components** (`packages/ritual/components/`) functional logic and primitives
+4. **UI Library** (`packages/ritual/ui-lib/`) themed wrappers and re-exports
+5. **Next.js App** (`apps/vsm-school-web/`) renders themed components
 
 ## Critical Conventions
 
-### Workspace Dependencies
+### Workspace Dependencies & Package Structure
+
+The monorepo uses **nested package structure** (`packages/gttm/`, `packages/ritual/`, `packages/rsys-os/`, `packages/vsm/`).
+
+**pnpm-workspace.yaml:**
+```yaml
+packages:
+  - 'apps/*'
+  - 'packages/**/*'
+```
 
 Use `workspace:*` protocol for internal packages:
 ```json
-"@gttm/ritual-brand": "workspace:*",
-"@gttm/ritual-ui": "workspace:*",
-"@rsys-os/design-source": "workspace:*"
+"@gttm/mission": "workspace:*",
+"@ritual/brand": "workspace:*",
+"@ritual/ui-lib": "workspace:*",
+"@rsys-os/data": "workspace:*"
 ```
 
-Never use relative file paths between packages. Always import through the workspace namespace.
-
-**Package Import Pattern:**
-```typescript
-// Correct: Import tokens from design-source package
-import colors from '@rsys-os/design-source/tokens/colors.json';
-
-// Wrong: Relative path between packages
-import colors from '../../../rsys-os/design-source/tokens/colors.json';
-```
+**Never use relative file paths between packages.** Always import through workspace namespace.
 
 ### Build Toolchain
 
-- **Packages**: Use `bun` for build scripts (`build-theme.ts`, `build-ui.ts`)
-- **App**: Standard Next.js build pipeline
-- **Commands**: `pnpm dev` (app), `pnpm build` (packages)
+- **Packages**: Use `tsc` for building TS packages, `bun` for compiler scripts.
+- **App**: Next.js 14 (App Router).
+- **Commands**: `pnpm build` (all), `pnpm dev` (app).
 
-**Important**: Packages MUST be built before the Next.js app can import them during development.
+**Build Order (Critical):**
+1. `@rsys-os/design-source` (Tokens)
+2. `@rsys-os/data` (Types & Client)
+3. `@ritual/brand` (CSS Compiler)
+4. `@gttm/components` & `@ritual/components` (Primitives)
+5. `@gttm/story` & `@gttm/codex` (Narrative)
+6. `@gttm/mission` (Orchestration)
+7. `@ritual/ui-lib` (Themed Exports)
+8. `vsm-school-web` (Application)
+
+**Parallel Build (from root):**
+```bash
+pnpm build
+```
 
 ### Phase-Based Architecture
 
-The system revolves around 5 ritual phases (see [packages/ritual/ui-lib/src/phases.ts](packages/ritual/ui-lib/src/phases.ts)):
+The system revolves around 5 ritual phases defined in `@ritual/components`:
 
-- **Plan** (5 min, amber): Set intentions
-- **Sprint** (25 min, emerald): Focused work (Pomodoro)
-- **Rest** (5 min, sky blue): Physical recovery
-- **Reflect** (10 min, purple): Learning capture
-- **Recover** (5 min, rose): Mental reset
-
-Every timer, color scheme, and UI flow is organized around these phases.
-
-### Six-Step Session Flow
-
-The VSM session flow (documented in [docs/specs/vsm-training-dojo.md](docs/specs/vsm-training-dojo.md)) follows:
-
-1. **Pulse**: Choose time window (Sprint 10m, Standard 25m, Grind 45m)
-2. **Codex**: Optional doctrinal framing (skippable)
-3. **Track**: Select training track (Genesis / Source Code / Powerhouse)
-4. **Prime**: Timed state alignment drill (30-60 seconds)
-5. **Produce**: Work surface for output capture
-6. **Archive**: Session completion + knowledge atom logging
-
-**Pattern**: Each step is full-screen, thumb-driven, part of continuous flow.
+- **Plan** (amber): Set intentions
+- **Sprint** (emerald): Focused work
+- **Rest** (sky blue): Physical recovery
+- **Reflect** (purple): Learning capture
+- **Recover** (rose): Mental reset
 
 ## Key File Locations
 
-- **Design Tokens**: [packages/rsys-os/design-source/tokens/](packages/rsys-os/design-source/tokens/) (colors, phases, typography, spacing, audio)
-- **Audio Assets**: [packages/rsys-os/design-source/assets/audio/](packages/rsys-os/design-source/assets/audio/) (phase-specific .wav files)
-- **Training Curriculum**: [apps/vsm-school-web/src/data/GenesisCurriculum.ts](apps/vsm-school-web/src/data/GenesisCurriculum.ts) (10 foundational drills)
-- **Genesis Tracker**: [apps/vsm-school-web/src/components/GenesisTracker.tsx](apps/vsm-school-web/src/components/GenesisTracker.tsx) (interactive checklist component)
-- **Main UI Component**: [packages/ritual/ui-lib/src/RitualCycleTracker.tsx](packages/ritual/ui-lib/src/RitualCycleTracker.tsx) (integrated timer + phase logic)
-- **Theme Compiler**: [packages/ritual/brand/scripts/build-theme.ts](packages/ritual/brand/scripts/build-theme.ts) (converts JSON → CSS)
-- **Layout Structure**: [apps/vsm-school-web/src/app/layout.tsx](apps/vsm-school-web/src/app/layout.tsx) (fixed sidebar + main stage pattern)
-
-## Development Workflow
-
-**Prerequisites**: 
-- `pnpm` (workspace package manager)
-- `bun` (for package build scripts)
-
-```bash
-# Install all dependencies (from workspace root)
-pnpm install
-
-# Build packages in dependency order (required before running app)
-cd packages/ritual/brand && pnpm build    # First: compile design tokens
-cd ../ui-lib && pnpm build                # Second: build UI components
-cd ../../apps/vsm-school-web && pnpm dev # Third: run Next.js app
-
-# Alternative: Build all packages recursively (from workspace root)
-pnpm -r --filter './packages/**' build
-
-# Build everything (all packages + app)
-pnpm -r build
-```
-
-**Debugging Tip**: If Next.js can't resolve `@gttm/*` or `@rsys-os/*` imports, packages haven't been built yet.
-
-## Design System Integration
-
-Colors are semantic and phase-aware:
-
-```typescript
-// DON'T: Hardcode colors
-className="bg-blue-500"
-
-// DO: Use phase-based semantic colors
-className={PHASES[currentPhase].color}  // e.g., 'bg-amber-600' for Sprint
-```
-
-**Pattern**: Components should reference `PHASES` array for dynamic theming, not manual color assignments.
-
-## Audio Architecture
-
-The `RitualCycleTracker` uses two audio systems:
-
-1. **Phase Transitions** - Synthetic tones via Web Audio oscillators
-   - Custom oscillators for chimes (see `playTone()` in `RitualCycleTracker.tsx`)
-   - Fallback to visual-only if audio context unavailable
-
-2. **Phase Background Music** - Curated `.wav` files
-   - Located in `packages/rsys-os/design-source/assets/audio/`
-   - Managed via `useRitualSound` hook consuming `tokens/audio.json` manifest
-   - Multiple tracks per phase with ratings, versions, BPM metadata
-
-**Audio Manifest Pattern:**
-```typescript
-import audioManifest from '@rsys-os/design-source/tokens/audio.json';
-
-// Access phase tracks
-const planTracks = audioManifest.phases.plan.tracks;
-const defaultTrack = planTracks.find(t => t.id === audioManifest.phases.plan.defaultTrack);
-```
-
-Currently **no external state library**. All state is local React state within `RitualCycleTracker`:
-
-```typescript
-const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-const [timeRemaining, setTimeRemaining] = useState(PHASES[0].duration);
-const [isRunning, setIsRunning] = useState(false);
-```
-
-**Future Integration**: Docs mention Supabase for persistence + "Shell API" for knowledge atom logging (currently console only).
-
-## Testing Strategy
-
-No test suite exists yet. `package.json` has placeholder:
-```json
-"test:visual": "echo \"Visual snapshot tests need...\" && exit 0"
-```
-
-**Planned**: Visual regression tests for CycleTracker desktop/mobile layouts and Net open/closed states.
-
-## External Integrations (Planned)
-
-From `docs/specs/TODO.md`:
-
-- **Supabase**: Auth + training data persistence
-- **Archive API**: Replace `console.log("Archiving...")` with real Supabase write
-- **Content Factor API**: Dynamic training block loading (currently hardcoded)
-
-**Pattern**: API integration points write to atoms table with type `vsm_session`.
+- **Design Tokens**: `packages/rsys-os/design-source/tokens/`
+- **Data Types**: `packages/rsys-os/data/src/types.ts`
+- **Mission Components**: `packages/gttm/mission/src/components/`
+- **Ritual Tracker**: `packages/ritual/components/src/components/RitualCycleTracker.tsx`
+- **Legacy Registry**: `packages/gttm/mission/src/lib/legacy-registry.ts`
 
 ## Naming Conventions
 
-- **Packages**: kebab-case with `@gttm/` scope (`@gttm/ritual-brand`)
-- **Files**: PascalCase for components, camelCase for utilities
-- **CSS Variables**: Double-dash prefix (`--color-phase-sprint`, `--spacing-md`)
+- **Packages**: kebab-case with `@ritual/`, `@gttm/`, `@vsm/`, or `@rsys-os/` scope.
+- **Terms**: Pulse, Codex, Track, Prime, Produce, Archive (The 6-Step Flow).
 
-## Recent Refactoring (Dec 2025)
+## Migration Status
 
-The codebase was recently refactored to externalize design tokens:
+**✅ Core Extraction Complete (Dec 2025):** 
+- Monolith components extracted to product packages.
+- Naming standardized to `@ritual/*` and `@gttm/*`.
+- Supabase persistence integrated for Mission and Trainer.
+- `@rsys-os/data` provides unified data access.
 
-**Before:**
-- Design tokens lived inside `ritual-brand` package
-- Relative imports between packages
-
-**After:**
-- Design tokens extracted to `@rsys-os/design-source` package
-- Proper workspace imports via package names
-- Audio manifest added (`tokens/audio.json`)
-- Nested package structure (`packages/ritual/`, `packages/rsys-os/`)
-
-**New Components:**
-- `GenesisTracker` - Interactive checklist for 10 foundational drills
-- Audio system with manifest-driven track management
-
-**In Progress:**
-- `/editor` route (placeholder)
-- `/blackjack` route (placeholder)
-- `rsys.style.system` - Multi-brand design system (architecture defined, not implemented)
+### RDX Directory Structure
+- `RDX/reports/` - Completed audits and reports.
+- `RDX/plans/` - Migration plans and schemas.
+- `RDX/todos/` - Categorized task backlogs.
+- `RDX/TODO.md` - Index of all active TODOs.
 
 ## Common Pitfalls
 
-1. **Workspace Resolution**: Changing a package requires rebuilding it before Next.js sees updates
-2. **Design Tokens**: Editing JSON in [packages/rsys-os/design-source/tokens/](packages/rsys-os/design-source/tokens/) requires running `pnpm build` in `packages/ritual/brand`
-3. **Phase Durations**: Values in `PHASES` array are in **seconds** (300 = 5 min), not milliseconds
-4. **Sidebar Layout**: Main content must have `ml-64` (margin-left) to avoid overlap with fixed sidebar
-5. **Audio Files**: Must use filename convention `{phase}_{track-name}_v{version}.wav` and update `audio.json` manifest
-6. **Package Paths**: The workspace uses nested package structure (`packages/ritual/`, `packages/rsys-os/`), not flat structure
-
-## Mission Context
-
-This system is part of the "BLACKOUT_GENESIS" project (see workspace path). The VSM methodology is a knowledge work training approach focused on **velocity** (sustainable speed) rather than raw productivity. The "Ritual" branding emphasizes mindful, repeatable patterns.
-
-**Design Philosophy**: Minimal, ritualistic, distraction-free. See [docs/specs/vsm-training-dojo.md](docs/specs/vsm-training-dojo.md): "This is the **dojo mat you step onto**. Minimal, focused, ritualistic."
+1. **Workspace Resolution**: Changing a package requires a rebuild (`pnpm build`).
+2. **Margin Overlap**: Main content must have `ml-64` to avoid sidebar overlap.
+3. **Implicit Any**: Always type `children` props in component primitives.
+4. **Data Access**: Always use `@rsys-os/data` types; avoid local interfaces for DB rows.

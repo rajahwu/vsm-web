@@ -76,7 +76,7 @@ The VSM School Web application has evolved significantly beyond initial specific
 **Implementation:**
 ```tsx
 'use client';
-import { RitualCycleTracker } from '@gttm/ritual-ui';
+import { RitualCycleTracker } from '@ritual/ui-lib';
 
 export default function Home() {
   return (
@@ -88,7 +88,7 @@ export default function Home() {
 ```
 
 **Features:**
-- Imports from `@gttm/ritual-ui` package
+- Imports from `@ritual/ui-lib` package
 - 5-phase ritual system (Plan → Sprint → Rest → Reflect → Recover)
 - Web Audio API integration
 - Timer with visual urgency indicators
@@ -384,8 +384,8 @@ type Atom = {
 - `react@18` + `react-dom@18`
 
 **Internal Packages:**
-- `@gttm/ritual-brand@workspace:*` - Theme compiler
-- `@gttm/ritual-ui@workspace:*` - Component library
+- `@ritual/brand@workspace:*` - Theme compiler
+- `@ritual/ui-lib@workspace:*` - Component library
 
 **UI Libraries:**
 - `@radix-ui/*` - 26 accessible primitive components

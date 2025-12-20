@@ -1,27 +1,32 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import styles from './training.module.css';
 import { useAtoms } from '@/hooks/useAtoms';
-import { missionRegistry, TrainingWindowId, TrainingBlock } from '@/lib/mission-registry';
+import { useTrainingWindows, useTrainingBlocks, useTrainingCards, TrainingBlockRow, TrainingCardRow } from '@gttm/mission';
+import type { TypedSupabaseClient } from '@rsys-os/data';
+
+// Cast for type safety if needed, though client.ts should already return it
+const db = supabase as TypedSupabaseClient;
 
 // --- TYPES ---
 type View = 'timeWindow' | 'block' | 'page' | 'completion';
-type BlockItem = TrainingBlock;
 
 export default function VSMTrainer() {
-  const windows = missionRegistry.trainingWindows;
-  const windowMap = useMemo(() => {
-    return windows.reduce<Record<TrainingWindowId, { duration: number; items: TrainingBlock[] }>>((acc, win) => {
-      acc[win.id] = { duration: win.durationMinutes, items: win.blocks };
-      return acc;
-    }, {} as Record<TrainingWindowId, { duration: number; items: TrainingBlock[] }>);
-  }, [windows]);
+  // Data Hooks
+  const { data: windows, isLoading: windowsLoading } = useTrainingWindows(supabase);
+  const [currentWindowId, setCurrentWindowId] = useState<string | null>(null);
+  
+  // Fetch blocks only when window is selected
+  const { data: blocks, isLoading: blocksLoading } = useTrainingBlocks(supabase, currentWindowId ?? undefined);
+  
+  const [currentBlock, setCurrentBlock] = useState<TrainingBlockRow | null>(null);
+  
+  // Fetch cards only when block is selected
+  const { data: cards, isLoading: cardsLoading } = useTrainingCards(supabase, currentBlock?.id);
 
   const [view, setView] = useState<View>('timeWindow');
-  const [currentWindow, setCurrentWindow] = useState<TrainingWindowId | null>(null);
-  const [currentBlock, setCurrentBlock] = useState<TrainingBlock | null>(null);
   const { atoms, refresh } = useAtoms('vsm_session');
 
   // Session State
@@ -31,6 +36,46 @@ export default function VSMTrainer() {
   const [isActive, setIsActive] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [isShipping, setIsShipping] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Persistence Key
+  const PERSISTENCE_KEY = 'vsm_trainer_session';
+
+  // Restore State
+  useEffect(() => {
+    const saved = localStorage.getItem(PERSISTENCE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.currentWindowId) setCurrentWindowId(data.currentWindowId);
+        if (data.currentBlock) setCurrentBlock(data.currentBlock);
+        if (data.view) setView(data.view);
+        if (data.currentCardIndex) setCurrentCardIndex(data.currentCardIndex);
+        if (data.timeRemaining) setTimeRemaining(data.timeRemaining);
+        if (data.isActive) setIsActive(data.isActive);
+        if (data.sessionStartTime) setSessionStartTime(data.sessionStartTime);
+      } catch (e) {
+        console.error('Failed to restore trainer session:', e);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save State
+  useEffect(() => {
+    if (isLoaded) {
+      const stateToSave = {
+        currentWindowId,
+        currentBlock,
+        view,
+        currentCardIndex,
+        timeRemaining,
+        isActive,
+        sessionStartTime
+      };
+      localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(stateToSave));
+    }
+  }, [isLoaded, currentWindowId, currentBlock, view, currentCardIndex, timeRemaining, isActive, sessionStartTime]);
 
   // Timer Logic
   useEffect(() => {
@@ -46,16 +91,20 @@ export default function VSMTrainer() {
     return () => clearInterval(interval);
   }, [isActive, timeRemaining]);
 
-  const selectTimeWindow = (window: TrainingWindowId) => {
-    setCurrentWindow(window);
-    setTimeRemaining((windowMap[window]?.duration ?? 0) * 60);
+  const selectTimeWindow = (windowId: string, duration: number) => {
+    setCurrentWindowId(windowId);
+    setTimeRemaining(duration * 60);
     setView('block');
   };
 
-  const selectBlock = (block: BlockItem) => { setCurrentBlock(block); };
+  const selectBlock = (block: TrainingBlockRow) => { setCurrentBlock(block); };
 
   const confirmBlockSelection = () => {
     if (!currentBlock) return;
+    // Wait for cards to load? They should be loading as soon as block is set.
+    // We might need a check here or disable the button until cards are ready.
+    if (cardsLoading || !cards || cards.length === 0) return;
+    
     setCurrentCardIndex(0);
     setCardFlipped(false);
     setSessionStartTime(Date.now());
@@ -66,7 +115,7 @@ export default function VSMTrainer() {
   const flipCard = () => setCardFlipped(!cardFlipped);
 
   const nextCard = () => {
-    if (currentBlock && currentCardIndex < currentBlock.cards.length - 1) {
+    if (cards && currentCardIndex < cards.length - 1) {
       setCurrentCardIndex(prev => prev + 1);
       setCardFlipped(false);
     }
@@ -75,22 +124,23 @@ export default function VSMTrainer() {
   const completeSession = () => { setIsActive(false); setView('completion'); };
 
   const restart = () => {
-    setCurrentWindow(null); setCurrentBlock(null); setCurrentCardIndex(0);
+    localStorage.removeItem(PERSISTENCE_KEY);
+    setCurrentWindowId(null); setCurrentBlock(null); setCurrentCardIndex(0);
     setCardFlipped(false); setIsActive(false); setView('timeWindow');
   };
 
   const shipToShell = async () => {
-    if (!currentBlock || !currentWindow) return;
+    if (!currentBlock || !currentWindowId || !cards) return;
     setIsShipping(true);
 
-    const activeCard = currentBlock.cards[currentCardIndex] ?? null;
+    const activeCard = cards[currentCardIndex] ?? null;
     const logEntry = {
-      trackId: currentWindow,
-      cardId: `${currentBlock.id}-${currentCardIndex + 1}`,
-      outputSummary: activeCard?.back ?? 'Session completed',
+      trackId: currentWindowId,
+      cardId: activeCard ? activeCard.id : 'unknown',
+      outputSummary: activeCard?.back_text ?? 'Session completed',
       block_id: currentBlock.id,
       block_title: currentBlock.title,
-      window_type: currentWindow,
+      window_type: currentWindowId, // This is technically the window_type string (e.g. 'sprint')
       cards_completed: currentCardIndex + 1,
       duration_seconds: sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0,
       timestamp: new Date().toISOString(),
@@ -98,7 +148,7 @@ export default function VSMTrainer() {
     };
 
     try {
-      const { error } = await supabase.from('atoms').insert({
+      const { error } = await (db.from('atoms') as any).insert({
         type: 'vsm_session',
         val: logEntry
       });
@@ -122,50 +172,60 @@ export default function VSMTrainer() {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+  if (windowsLoading) {
+    return <div className="flex h-screen items-center justify-center text-teal-500">Initializing VSM Protocols...</div>;
+  }
+
   return (
     <div className={styles.dojoContainer}>
       <div style={{ marginBottom: '2rem', color: 'var(--color-teal-500)', fontWeight: 'bold' }}>
         VSM TRAINING // {view.toUpperCase()}
       </div>
 
-      {view === 'timeWindow' && (
+      {view === 'timeWindow' && windows && (
         <div className={styles.selectionView}>
           <h1>Choose Your Intensity</h1>
           <div className={styles.windowGrid}>
-            {(Object.keys(windowMap) as TrainingWindowId[]).map((key) => (
-              <div key={key}
-                className={`${styles.windowCard} ${currentWindow === key ? styles.selected : ''}`}
-                onClick={() => selectTimeWindow(key)}
+            {windows.map((win) => (
+              <div key={win.id}
+                className={`${styles.windowCard} ${currentWindowId === win.window_type ? styles.selected : ''}`}
+                onClick={() => selectTimeWindow(win.window_type, win.duration_minutes)}
               >
-                <h3>{key.toUpperCase()}</h3>
-                <div className={styles.duration}>{windowMap[key]?.duration ?? 0} min</div>
+                <h3>{win.display_name.toUpperCase()}</h3>
+                <div className={styles.duration}>{win.duration_minutes} min</div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {view === 'block' && currentWindow && (
+      {view === 'block' && currentWindowId && (
         <div className={styles.blockView}>
           <h2>Select Drill Protocol</h2>
-          <div id="blocksContainer">
-            {windowMap[currentWindow]?.items.map((block) => (
-              <div key={block.id}
-                className={`${styles.blockDescription} ${currentBlock?.id === block.id ? styles.selected : ''}`}
-                onClick={() => selectBlock(block)}
-              >
-                <h3>{block.title}</h3>
-                <p>{block.theme}</p>
-              </div>
-            ))}
-          </div>
-          <button className={styles.primaryBtn} onClick={confirmBlockSelection} disabled={!currentBlock}>
-            ENGAGE
+          {blocksLoading ? <p>Loading Blocks...</p> : (
+            <div id="blocksContainer">
+              {blocks?.map((block) => (
+                <div key={block.id}
+                  className={`${styles.blockDescription} ${currentBlock?.id === block.id ? styles.selected : ''}`}
+                  onClick={() => selectBlock(block)}
+                >
+                  <h3>{block.title}</h3>
+                  <p>{block.theme}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          <button 
+            className={styles.primaryBtn} 
+            onClick={confirmBlockSelection} 
+            disabled={!currentBlock || cardsLoading || !cards || cards.length === 0}
+          >
+            {cardsLoading ? 'LOADING CARDS...' : 'ENGAGE'}
           </button>
         </div>
       )}
 
-      {view === 'page' && currentBlock && (
+      {view === 'page' && currentBlock && cards && (
         <div className={styles.pageView}>
           <div className={styles.pageHeader}>
             <span>{currentBlock.title}</span>
@@ -176,18 +236,18 @@ export default function VSMTrainer() {
               {!cardFlipped ? (
                 <div className={styles.cardFront}>
                   <h3>SCENARIO</h3>
-                  <p className={styles.scenario}>{currentBlock.cards[currentCardIndex].front}</p>
+                  <p className={styles.scenario}>{cards[currentCardIndex].front_text}</p>
                 </div>
               ) : (
                 <div className={styles.cardBack}>
                   <h3>ACTION</h3>
-                  <div className={styles.action}>{currentBlock.cards[currentCardIndex].back}</div>
+                  <div className={styles.action}>{cards[currentCardIndex].back_text}</div>
                 </div>
               )}
               <div className={styles.cardNav}>
                 <button className={styles.secondaryBtn} onClick={flipCard}>FLIP</button>
-                <span className={styles.cardCounter}>{currentCardIndex + 1} / {currentBlock.cards.length}</span>
-                <button className={styles.secondaryBtn} onClick={nextCard} disabled={currentCardIndex === currentBlock.cards.length - 1}>
+                <span className={styles.cardCounter}>{currentCardIndex + 1} / {cards.length}</span>
+                <button className={styles.secondaryBtn} onClick={nextCard} disabled={currentCardIndex === cards.length - 1}>
                   NEXT
                 </button>
               </div>

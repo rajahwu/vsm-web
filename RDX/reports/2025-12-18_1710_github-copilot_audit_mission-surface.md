@@ -16,7 +16,7 @@
 
 ## Current 4-Phase / 4-State Flows
 - **Training flow** (`/training`): `timeWindow → block → page → completion`, hardcoded data, CSS module styling, ships to Supabase `atoms` (type `vsm_session`).
-- **Cycle tracker** (`/tracker`): Uses `RitualCycleTracker` from `@gttm/ritual-ui` (phase timer), still monolithic.
+- **Cycle tracker** (`/tracker`): Uses `RitualCycleTracker` from `@ritual/ui-lib` (phase timer), still monolithic.
 - **Checklist** requirements (Transmission → Dojo → Forge) are not yet mapped to existing routes/components.
 
 ---

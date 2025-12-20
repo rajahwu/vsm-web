@@ -29,8 +29,8 @@
 - **Status:** ✅ VERIFIED & DOCUMENTED
 - **Findings:**
   - `@rsys-os/design-source` - No build step required (JSON tokens)
-  - `@gttm/ritual-brand` - Builds first, imports design-source
-  - `@gttm/ritual-ui` - Builds second, depends on ritual-brand
+  - `@ritual/brand` - Builds first, imports design-source
+  - `@ritual/ui-lib` - Builds second, depends on ritual-brand
   - `vsm-school-web` - Builds last, imports ritual-ui
 - **Resolution:** pnpm respects workspace dependency graph automatically
 
@@ -93,8 +93,8 @@ vsm_school_merger/
 │   └── vsm-school-web/          # Next.js 14 training application
 ├── packages/
 │   ├── ritual/
-│   │   ├── brand/               # @gttm/ritual-brand - Theme compiler
-│   │   └── ui-lib/              # @gttm/ritual-ui - Component library
+│   │   ├── brand/               # @ritual/brand - Theme compiler
+│   │   └── ui-lib/              # @ritual/ui-lib - Component library
 │   └── rsys-os/
 │       ├── design-source/       # @rsys-os/design-source - Token repository
 │       ├── style/               # rsys.style.system (WIP)
@@ -108,9 +108,9 @@ vsm_school_merger/
 ```
 vsm-school-web (Next.js App)
     ↓
-@gttm/ritual-ui (Components)
+@ritual/ui-lib (Components)
     ↓
-@gttm/ritual-brand (Theme)  +  @rsys-os/design-source (Tokens)
+@ritual/brand (Theme)  +  @rsys-os/design-source (Tokens)
 ```
 
 **Key Architectural Decision**: Design tokens are now externalized into `@rsys-os/design-source`, enabling multi-brand support and independent token versioning.
@@ -154,7 +154,7 @@ vsm-school-web (Next.js App)
 - BPM metadata for tempo-based matching
 - Shuffle and loop configurations per phase
 
-### 2. Ritual Brand Package (`@gttm/ritual-brand`)
+### 2. Ritual Brand Package (`@ritual/brand`)
 
 **Location:** `packages/ritual/brand/`
 
@@ -182,7 +182,7 @@ RitualBrand.toCSSVariables(); // → --color-phase-sprint, --spacing-md, etc.
 
 **Build Script:** `scripts/build-theme.ts` (uses Bun runtime)
 
-### 3. Ritual UI Library (`@gttm/ritual-ui`)
+### 3. Ritual UI Library (`@ritual/ui-lib`)
 
 **Location:** `packages/ritual/ui-lib/`
 
@@ -218,7 +218,7 @@ Custom audio management hook consuming `audio.json` manifest:
 **Dependencies:**
 ```json
 {
-  "@gttm/ritual-brand": "workspace:*",
+  "@ritual/brand": "workspace:*",
   "@rsys-os/design-source": "workspace:*",
   "lucide-react": "^0.556.0"
 }
@@ -297,7 +297,7 @@ Custom audio management hook consuming `audio.json` manifest:
 
 **Stage 2: CSS Variable Compilation**
 ```css
-/* @gttm/ritual-brand output */
+/* @ritual/brand output */
 :root {
   --color-phase-sprint: var(--color-amber-600);
 }
@@ -305,7 +305,7 @@ Custom audio management hook consuming `audio.json` manifest:
 
 **Stage 3: Component Consumption**
 ```tsx
-// @gttm/ritual-ui/RitualCycleTracker.tsx
+// @ritual/ui-lib/RitualCycleTracker.tsx
 const PHASES = [
   {
     id: 'sprint',
@@ -337,7 +337,7 @@ cd ../ui-lib && pnpm build
 cd ../../apps/vsm-school-web && pnpm dev
 ```
 
-**Common Pitfall:** If Next.js throws `Cannot find module '@gttm/ritual-ui'`, packages weren't built.
+**Common Pitfall:** If Next.js throws `Cannot find module '@ritual/ui-lib'`, packages weren't built.
 
 ### Token Updates
 
@@ -461,7 +461,7 @@ generation.prompts.generateAssetsForBrand(info, prompts)
 | Category | Convention | Examples |
 |----------|-----------|----------|
 | **Components** | PascalCase | `RitualCycleTracker`, `GenesisTracker` |
-| **Packages** | kebab-case + namespace | `@gttm/ritual-brand`, `@rsys-os/design-source` |
+| **Packages** | kebab-case + namespace | `@ritual/brand`, `@rsys-os/design-source` |
 | **Files** | PascalCase (components), camelCase (utils) | `RitualBrand.ts`, `useRitualSound.ts` |
 | **CSS Variables** | Double-dash + kebab | `--color-phase-sprint`, `--spacing-md` |
 | **Audio Files** | phase_track-name_version | `plan_five-smooth-stones_v1.wav` |
@@ -620,7 +620,7 @@ generation.prompts.generateAssetsForBrand(info, prompts)
     - Analytics integration
 
 13. **Mobile App (React Native)**
-    - Reuse `@gttm/ritual-ui` components
+    - Reuse `@ritual/ui-lib` components
     - Native audio playback
     - Offline mode with sync
 

@@ -1,0 +1,40 @@
+{
+  "name": "@gttm/mission",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@gttm/brand": "workspace:*",
+    "@gttm/codex": "workspace:*",
+    "@gttm/components": "workspace:*",
+    "@ritual/ui-lib": "workspace:*",
+    "@ritual/components": "workspace:*",
+    "@gttm/story": "workspace:*",
+    "@rsys-os/data": "workspace:*",
+    "lucide-react": "^0.556.0"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.88.0",
+    "@types/node": "^25.0.3",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}

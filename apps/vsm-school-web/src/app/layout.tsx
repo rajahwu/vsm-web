@@ -14,16 +14,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-zinc-950 text-zinc-100 antialiased font-sans min-h-screen flex">
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-zinc-950 text-zinc-100 antialiased font-sans min-h-screen">
         <Providers>
-          {/* The Fixed Control Panel */}
-          <Sidebar />
-
-          {/* The Main Stage (Shifted right by w-64) */}
-          <main className="flex-1 ml-64 min-h-screen">
-            {children}
-          </main>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            {/* The Main Stage pattern handles its own layout/margin via CSS or dynamic classes if needed, 
+                but for simplicity with fixed sidebar, we'll keep it flexible. */}
+            <main className="flex-1 transition-all duration-300">
+              {children}
+            </main>
+          </div>
         </Providers>
       </body>
     </html>

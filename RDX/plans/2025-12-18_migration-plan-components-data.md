@@ -465,7 +465,7 @@ mkdir -p packages/ritual/components/src/{curriculum,training,narrative,progress}
     "./progress": "./src/progress/index.ts"
   },
   "dependencies": {
-    "@gttm/ritual-brand": "workspace:*",
+    "@ritual/brand": "workspace:*",
     "@rsys-os/design-source": "workspace:*",
     "react": "^18"
   }
@@ -487,7 +487,7 @@ mkdir -p packages/ritual/components/src/{curriculum,training,narrative,progress}
 **File:** `packages/ritual/components/src/curriculum/CurriculumTracker.tsx`
 
 ```typescript
-import { useTheme } from '@gttm/ritual-brand';
+import { useTheme } from '@ritual/brand';
 
 interface CurriculumItem {
   id: string;

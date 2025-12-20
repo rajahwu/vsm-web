@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Mountain, Eye, Users, Cog, Star, ArrowRight, Mail } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const LandingPage = () => {
   const scrollToSection = (id: string) => {
@@ -61,13 +62,15 @@ const LandingPage = () => {
           </p>
           
           {/* CTA Button */}
-          <Button 
-            size="lg" 
-            className="bg-white/10 text-white border border-white/20 hover:bg-white/20 text-lg px-8 py-6 rounded-xl backdrop-blur-sm transition-smooth shadow-glow"
-          >
-            Start Your Practice
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/mission">
+            <Button 
+              size="lg" 
+              className="bg-white/10 text-white border border-white/20 hover:bg-white/20 text-lg px-8 py-6 rounded-xl backdrop-blur-sm transition-smooth shadow-glow"
+            >
+              Start Your Practice
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
@@ -207,9 +210,11 @@ const LandingPage = () => {
               </div>
               
               <div className="flex items-center space-x-6">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 rounded-xl">
-                  Enroll Now - $997
-                </Button>
+                <Link href="/mission">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 rounded-xl">
+                    Enroll Now - $997
+                  </Button>
+                </Link>
                 <span className="text-2xl font-bold text-accent">$997</span>
               </div>
             </div>
@@ -337,13 +342,15 @@ const LandingPage = () => {
                     className="bg-white/20 border-white/30 text-white placeholder:text-white/60 focus:border-white/50"
                   />
                 </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-6 rounded-xl font-semibold"
-                >
-                  Start Your Practice
-                  <Mail className="ml-2 h-5 w-5" />
-                </Button>
+                <Link href="/mission" className="w-full">
+                  <Button 
+                    type="button" 
+                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-6 rounded-xl font-semibold"
+                  >
+                    Start Your Practice
+                    <Mail className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
               </form>
             </CardContent>
           </Card>

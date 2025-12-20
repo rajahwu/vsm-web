@@ -174,11 +174,32 @@
   box-shadow: var(--shadow-glow);
 }
 
-/* Base styles */
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-body);
+@layer base {
+  :root {
+    --sidebar-width: 16rem;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Sidebar Offset System */
+main {
+  margin-left: 16rem;
+  @apply transition-[margin] duration-300;
+}
+
+/* When sidebar is collapsed */
+body:has(aside.w-20) main {
+  margin-left: 5rem;
+}
+
+/* Mobile: Overlay sidebar, no margin */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0 !important;
+  }
 }
 
 * {

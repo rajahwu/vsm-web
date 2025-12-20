@@ -86,4 +86,19 @@ export class RitualBrand {
     vars.push("}");
     return vars.join("\n");
   }
+
+  static toTailwindCSS() {
+    // Tailwind 4 @theme block for design tokens
+    const lines: string[] = ["@theme {"];
+    
+    // Colors from palette
+    Object.entries(colors.palette as AnyJson).forEach(([hue, shades]) => {
+      Object.entries(shades).forEach(([shade, value]) => {
+        lines.push(`  --color-${hue}-${shade}: ${value};`);
+      });
+    });
+    
+    lines.push("}");
+    return lines.join("\n");
+  }
 }

@@ -1,0 +1,27 @@
+{
+  "name": "@vsm/brand",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "pnpm build:clean && tsc && pnpm build:theme",
+    "build:clean": "rm -rf dist && mkdir dist",
+    "build:theme": "bun run scripts/build-theme.ts"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./vsm.css": "./dist/vsm.css",
+    "./variables.css": "./dist/variables.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@rsys-os/design-source": "workspace:*",
+    "@types/node": "^20.19.25",
+    "typescript": "^5.0.0"
+  }
+}

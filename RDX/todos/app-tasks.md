@@ -15,12 +15,14 @@
 
 - [ ] Create onboarding flow (welcome, tour, first session guidance).
 - [ ] Add accessibility enhancements (keyboard nav, screen reader support, focus management).
-- [ ] Build settings interface (timer prefs, notifications, theme, export).
-- [ ] Implement /editor and /blackjack routes (purpose + UX definition).
-- [ ] Add Genesis persistence (localStorage save, reset, import/export).
-- [ ] Add responsive sidebar with persisted state.
-- [ ] Implement theme switcher + dark mode tokens.
-- [ ] Add audio controls (track selection, play/pause, volume, preload).
+- [ ] Build settings interface (timer prefs, notifications, theme, export). Status: `SettingsDialog` integrated in Sidebar.
+- [x] Implement /editor and /blackjack routes (purpose + UX definition).
+- [x] Add Genesis persistence (localStorage save, reset, import/export).
+- [x] Add responsive sidebar with persisted state.
+- [x] Implement theme switcher + dark mode tokens.
+- [x] Add audio controls (track selection, play/pause, volume, preload). Status: `SettingsDialog` + `useRitualSound`.
+- [x] Wire landing page CTAs to /mission.
+- [x] Add session persistence to VSMTrainer.
 
 ## P2 - Mobile & Engagement
 

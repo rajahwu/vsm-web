@@ -7,11 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
     "test:visual": "echo \"Visual snapshot tests need to be implemented for CycleTracker desktop/mobile and Net open/closed.\" && exit 0"
   },
   "dependencies": {
-    "@gttm/ritual-brand": "workspace:*",
-    "@gttm/ritual-ui": "workspace:*",
+    "@ritual/brand": "workspace:*",
+    "@ritual/ui-lib": "workspace:*",
+    "@ritual/components": "workspace:*",
+    "@gttm/mission": "workspace:*",
+    "@gttm/story": "workspace:*",
+    "@gttm/codex": "workspace:*",
+    "@gttm/components": "workspace:*",
+    "@gttm/brand": "workspace:*",
+    "@rsys-os/design-source": "workspace:*",
+    "@rsys-os/data": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -64,6 +74,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.1",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^20.19.27",
     "@types/react": "^18",
@@ -73,6 +84,7 @@
     "eslint-config-next": "14.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
+    "vitest": "^2.1.8",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }

@@ -12,7 +12,7 @@
     "clean": "pnpm -r exec rm -rf dist .next node_modules/.cache",
     "build:packages": "pnpm -r --filter './packages/**' build",
     "build:app": "pnpm --filter vsm-school-web build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "keywords": ["vsm", "ritual", "productivity", "training"],
   "author": "",

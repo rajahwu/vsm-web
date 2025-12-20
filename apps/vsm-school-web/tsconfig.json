@@ -20,8 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "ritual-brand": ["../../packages/ritual-brand/src"],
-      "ritual-ui": ["../../packages/ritual-ui/src"]
+      "@ritual/brand": ["../../packages/ritual/brand/src"],
+      "@ritual/ui-lib": ["../../packages/ritual/ui-lib/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

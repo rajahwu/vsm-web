@@ -1,11 +1,14 @@
 'use client';
 
-import { NetProvider } from '@gttm/ritual-ui';
+import { NetProvider } from '@gttm/components';
+import { ThemeProvider } from 'next-themes';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NetProvider>
-      {children}
-    </NetProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <NetProvider>
+        {children}
+      </NetProvider>
+    </ThemeProvider>
   );
 }

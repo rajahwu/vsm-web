@@ -15,8 +15,9 @@
 
 ## P1 - Core Data & Integrations
 
-- [ ] Build data client package for Supabase abstraction (typed queries, shared schemas).
-- [ ] Implement session persistence (resume on refresh, cross-device sync strategy).
+- [ ] **DB Migration**: Execute `RDX/plans/migrations/001_add_metadata_to_cards.sql` to add `metadata` column.
+- [x] Build data client package for Supabase abstraction (typed queries, shared schemas). Status: `@rsys-os/data` integrated.
+- [ ] Implement session persistence (resume on refresh, cross-device sync strategy). Status: `MissionSurface` progress moved to DB. `VSMTrainer` state persistence pending.
 - [ ] Add authentication and user management (magic links, session storage, RLS alignment).
 - [ ] Replace Ship-to-Shell console logs with API integration + retry/queue.
 - [ ] Define Content Factor API integration for training content.

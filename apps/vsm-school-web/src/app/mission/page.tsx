@@ -1,7 +1,8 @@
 'use client';
 
 import { FEATURES } from '@/lib/features';
-import { MissionSurface } from '@/components/MissionSurface';
+import { MissionSurface } from '@gttm/mission';
+import { supabase } from '@/lib/supabase/client';
 
 export default function MissionSurfacePage() {
   if (!FEATURES.USE_MISSION_SURFACE) {
@@ -26,7 +27,7 @@ export default function MissionSurfacePage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <MissionSurface />
+      <MissionSurface supabase={supabase} />
     </main>
   );
 }

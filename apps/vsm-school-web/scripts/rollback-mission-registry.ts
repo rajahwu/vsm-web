@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { missionRegistry } from '../src/lib/mission-registry';
+import { missionRegistry } from '@gttm/mission';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

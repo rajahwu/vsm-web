@@ -1,6 +1,6 @@
 'use client';
 
-import { RitualCycleTracker } from '@gttm/ritual-ui';
+import { RitualCycleTracker } from '@ritual/ui-lib';
 
 export default function Home() {
   return (

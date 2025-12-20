@@ -1,0 +1,42 @@
+# Page snapshot
+
+```yaml
+- main [ref=e3]:
+  - main [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - heading "Choose Time Window" [level=1] [ref=e7]
+        - paragraph [ref=e8]: Set the pace before you enter the ritual
+      - generic [ref=e10]:
+        - button "Sprint Short burn for tight execution windows. 10 minutes • Mission window" [active] [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]:
+              - heading "Sprint" [level=3] [ref=e14]
+              - paragraph [ref=e15]: Short burn for tight execution windows.
+              - generic [ref=e16]:
+                - generic [ref=e17]: 10 minutes
+                - generic [ref=e18]: •
+                - generic [ref=e19]: Mission window
+            - img [ref=e21]
+        - button "Standard Default training pace for most rituals. 25 minutes • Mission window" [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25]:
+              - heading "Standard" [level=3] [ref=e26]
+              - paragraph [ref=e27]: Default training pace for most rituals.
+              - generic [ref=e28]:
+                - generic [ref=e29]: 25 minutes
+                - generic [ref=e30]: •
+                - generic [ref=e31]: Mission window
+            - img [ref=e33]
+        - button "Grind Deep focus for longer drills and reflection. 45 minutes • Mission window" [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - heading "Grind" [level=3] [ref=e38]
+              - paragraph [ref=e39]: Deep focus for longer drills and reflection.
+              - generic [ref=e40]:
+                - generic [ref=e41]: 45 minutes
+                - generic [ref=e42]: •
+                - generic [ref=e43]: Mission window
+            - img [ref=e45]
+      - paragraph [ref=e48]: Adjust windows anytime from Mission Select
+```

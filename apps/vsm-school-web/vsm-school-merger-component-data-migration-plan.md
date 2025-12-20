@@ -442,7 +442,7 @@ Package Configuration:
     "./progress": "./src/progress/index.ts"  
   },  
   "dependencies": {  
-    "@gttm/ritual-brand": "workspace:\*",  
+    "@ritual/brand": "workspace:\*",  
     "@rsys-os/design-source": "workspace:\*",  
     "react": "^18"  
   }  
@@ -463,7 +463,7 @@ New Architecture:
 
 File: packages/ritual/components/src/curriculum/CurriculumTracker.tsx
 
-import { useTheme } from '@gttm/ritual-brand';
+import { useTheme } from '@ritual/brand';
 
 interface CurriculumItem {  
   id: string;  

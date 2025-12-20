@@ -7,8 +7,8 @@
 
 ## P0 - Build & Tests
 
-- [ ] Set up Vitest + Testing Library at workspace root.
-- [ ] Add component tests (GenesisTracker, RitualCycleTracker, useRitualSound).
+- [x] Set up Vitest + Testing Library at workspace root.
+- [x] Add component tests (GenesisTracker, RitualCycleTracker, Phases).
 - [ ] Add E2E/visual test strategy (Playwright baseline).
 - [ ] Add CI workflows for build + test on PRs.
 

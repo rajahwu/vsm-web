@@ -39,8 +39,8 @@ vsm_school_merger/
 │   └── vsm-school-web/              # Next.js 14 training app
 ├── packages/
 │   ├── ritual/
-│   │   ├── brand/                   # Theme compiler (@gttm/ritual-brand)
-│   │   └── ui-lib/                  # React components (@gttm/ritual-ui)
+│   │   ├── brand/                   # Theme compiler (@ritual/brand)
+│   │   └── ui-lib/                  # React components (@ritual/ui-lib)
 │   └── rsys-os/
 │       └── design-source/           # Design tokens (@rsys-os/design-source)
 └── docs/
@@ -93,8 +93,8 @@ pnpm dev
 Packages must be built in dependency order:
 
 1. `@rsys-os/design-source` (no build needed)
-2. `@gttm/ritual-brand` (compiles design tokens)
-3. `@gttm/ritual-ui` (builds components)
+2. `@ritual/brand` (compiles design tokens)
+3. `@ritual/ui-lib` (builds components)
 4. `apps/vsm-school-web` (Next.js app)
 
 **Tip:** Run `pnpm build` from root to build everything.

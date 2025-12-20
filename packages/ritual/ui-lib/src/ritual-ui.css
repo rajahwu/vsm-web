@@ -2,7 +2,7 @@
 
 /* 1. Import the Variables from Brand */
 
-@import "@gttm/ritual-brand/ritual.css";
+@import "@ritual/brand/ritual.css";
 
 /* 2. Scan THIS package (Self-Contained) */
 @source ".";
