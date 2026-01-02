@@ -99,6 +99,12 @@ Packages must be built in dependency order:
 
 **Tip:** Run `pnpm build` from root to build everything.
 
+## 🧭 RDX Operations
+
+Project audits, plans, and task backlogs live under `RDX/`.
+
+- RDX TODO index: `RDX/TODO.md`
+
 ---
 
 ## 📚 Training Tracks

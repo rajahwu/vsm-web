@@ -12,6 +12,8 @@
 - `RDX/TODO.md` - Index of all active TODO lists.
 - `RDX/readiness.md` - Readiness checklist + report naming standards.
 - `RDX/rdx-migration.md` - Task list for RDX organization.
+- `RDX/reports/INDEX.md` - Index of all reports.
+- `RDX/UPDATE.md` - Migration status and completion notes.
 
 ## How To Use
 
@@ -23,3 +25,4 @@
 
 - TODO index: `RDX/TODO.md`
 - Readiness checklist: `RDX/readiness.md`
+- Reports index: `RDX/reports/INDEX.md`

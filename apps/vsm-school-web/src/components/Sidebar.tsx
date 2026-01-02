@@ -80,6 +80,7 @@ export function Sidebar() {
         <NavLink href="/training" label="VSM Trainer" icon={<Activity size={18} />} collapsed={isCollapsed} />
         <NavLink href="/mission" label="Mission Surface" icon={<Zap size={18} />} collapsed={isCollapsed} />
         <NavLink href="/editor" label="Card Editor" icon={<SettingsIcon size={18} />} collapsed={isCollapsed} />
+
       </nav>
 
       {/* Footer Controls */}
